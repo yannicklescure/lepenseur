@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import { COLORS } from "../constants";
 
 export default createGlobalStyle`
   :root {
@@ -36,6 +37,7 @@ export default createGlobalStyle`
     font-size: 100%;
     /* font: inherit; */
     vertical-align: baseline;
+    box-sizing: border-box;
   }
   /* HTML5 display-role reset for older browsers */
   article, aside, details, figcaption, figure, 
@@ -59,5 +61,20 @@ export default createGlobalStyle`
   table {
     border-collapse: collapse;
     border-spacing: 0;
+  }
+
+  /*
+    Custom Le penseur - 20220407
+    License: Unlicense (https://unlicense.org/)
+  */
+
+  input {
+    font-size: 16px;
+    height: 34px;
+    border-radius: 4px;
+    padding: 8px 12px;
+    border: 1px solid ${COLORS.secondary};
+    outline: none;
+    box-sizing: border-box;
   }
 `;
