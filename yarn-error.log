@@ -1,0 +1,42 @@
+Arguments: 
+  /home/yannicklescure/.nvm/versions/node/v16.13.1/bin/node /home/yannicklescure/.nvm/versions/node/v16.13.1/bin/yarn start:server
+
+PATH: 
+  ./bin:./node_modules/.bin:/anaconda3/bin:/home/yannicklescure/anaconda3/bin:/home/yannicklescure/.rbenv/bin:./bin:./node_modules/.bin:/anaconda3/bin:/home/yannicklescure/anaconda3/bin:/home/yannicklescure/.nvm/versions/node/v16.13.1/bin:/home/yannicklescure/.rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/sbin:/usr/local/sbin
+
+Yarn version: 
+  1.22.17
+
+Node version: 
+  16.13.1
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/yannicklescure/code/concordia-bootcamp/final-project/lepenseur/package.json: Unexpected token , in JSON at position 215
+      at JSON.parse (<anonymous>)
+      at /home/yannicklescure/.nvm/versions/node/v16.13.1/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/home/yannicklescure/.nvm/versions/node/v16.13.1/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /home/yannicklescure/.nvm/versions/node/v16.13.1/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "lepenseur",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/yannicklescure/lepenseur.git",
+    "author": "Yannick Lescure <yannick.lescure@gmail.com>",
+    "license": "MIT"
+  },
+  script: {
+    "start:client": "cd client && yarn start",
+    "start:server": "cd server && yarn start"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
