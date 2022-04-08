@@ -4,11 +4,14 @@ export const COLORS = {
   dark: "#212429",
   darker: "#11181C",
   secondary: "#6d757e",
+  red: "#dc3e45",
   danger: "#dc3e45",
+  warning: "#fec341",
   yellow: "#fec341",
   light: "#f8fafb",
   lightGrey: "#d3d3d3",
   success: "#328755",
+  blue: "#126ffc",
   primary: "#126ffc",
   info: "#41caef",
   purple: "#7952b3",
@@ -27,3 +30,5 @@ export const COLORS = {
 
 // For styled-components
 // ${COLORS.danger}
+
+export const MIN_CHAR = 3;

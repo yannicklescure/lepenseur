@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { COLORS } from "../constants";
+import { FaSearch } from "react-icons/fa";
 
 const SearchInput = () => {
   const thisInput = useRef();

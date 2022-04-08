@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter } from "react-router-dom";
+import { UserProvider } from './contexts/UserContext';
 
 // Hide all app console.logs
 if (process.env.NODE_ENV !== "development") console.log = () => {};
@@ -10,9 +10,9 @@ if (process.env.NODE_ENV !== "development") console.log = () => {};
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
-  <BrowserRouter>
+  <UserProvider>
     <App />
-  </BrowserRouter>
+  </UserProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

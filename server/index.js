@@ -5,6 +5,15 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 
+const {
+  getUsers,
+  createUser,
+  loginUser,
+  // updateCart,
+  // updateBookmarks,
+  // updateOrdersHistory,
+} = require("./handlers");
+
 const PORT = process.env.PORT || 8080;
 
 const app = express();
@@ -34,8 +43,13 @@ if (process.env.NODE_ENV === 'developement') {
   app.use("/", express.static(__dirname + "/"));
 }
 
+app.get("/api/users", getUsers)
+app.post("/api/login", loginUser)
+app.post("/api/signup", createUser)
+
 // app.get("/bacon", (req, res) => res.status(200).json("🥓"));
 
+// The section below is to serve React on heroku server
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
   app.use(express.static(path.resolve(__dirname, '../client/build')));

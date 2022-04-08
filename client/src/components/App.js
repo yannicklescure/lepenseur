@@ -8,22 +8,25 @@ import Signup from "../pages/Signup";
 import UserPage from "../pages/UserPage";
 import GlobalStyles from "./GlobalStyles";
 import Navbar from "./Navbar";
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
     <>
-      <GlobalStyles />
-      <Navbar />
-      <Wrapper>
-        <Routes>
-          <Route path="*" element={<ErrorPage />} />
-          <Route path="/" element={<Homepage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/:username" element={<UserPage />} />
-          <Route path="/:username/:slug" element={<Article />} />
-        </Routes>
-      </Wrapper>
+      <BrowserRouter>
+        <GlobalStyles />
+        <Navbar />
+        <Wrapper>
+          <Routes>
+            <Route path="*" element={<ErrorPage />} />
+            <Route path="/" element={<Homepage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/:username" element={<UserPage />} />
+            <Route path="/:username/:slug" element={<Article />} />
+          </Routes>
+        </Wrapper>
+      </BrowserRouter>
     </>
   );
 }
