@@ -24,14 +24,16 @@ const Login = () => {
 
   // check if all inputs are filled--if true, enable Sign Up button
   const handleChange = (key, value) => {
+    const data = { ...formData, [key]: value };
     console.log(key + ': ' + value);
-    setFormData({ ...formData, [key]: value });
-    formData.email.length > MIN_CHAR && formData.password.length > MIN_CHAR && value.length > MIN_CHAR
+    setFormData(data);
+    data.email.length > MIN_CHAR && data.password.length > MIN_CHAR
       ? setDisabled(false)
       : setDisabled(true);
     // if all inputs are valid, setValid(true)
     setValid(true);
     setErrorMessage('');
+    return;
   };
 
   const handleSubmit = (ev) => {
@@ -79,13 +81,13 @@ const Login = () => {
         <Input
           type="email"
           name="email"
-          required
+          required={true}
           placeholder="E-mail"
           handleChange={handleChange}
         />
         <Password
           name="password"
-          required
+          required={true}
           placeholder="Password"
           handleChange={handleChange}
         />

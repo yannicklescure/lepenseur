@@ -1,31 +1,33 @@
 import styled from "styled-components";
 import { useState, useRef, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
-import { COLORS } from "../constants";
+import { COLORS, MIN_CHAR } from "../constants";
 import { UserContext } from "../contexts/UserContext";
 import Loading from "../components/Loading/Loading";
 import { FaFeatherAlt } from "react-icons/fa";
+import Input from "../components/inputs/Input";
+import Password from "../components/inputs/Password";
+import { signUpInitialState } from "../settings";
+import ErrorMsg from "../components/ErrorMsg";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
   const [valid, setValid] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [formData, setFormData] = useState(signUpInitialState);
 
   const {
     state: { status },
-    actions: { loadingUser, receivedUserFromServer, errorFromServerUser },
+    actions: { loadingUser, logoutUser, receivedUserFromServer, errorFromServerUser },
   } = useContext(UserContext);
 
-  // create a reference for each input to store the values
-  const firstName = useRef();
-  const lastName = useRef();
-  const email = useRef();
-  const password = useRef();
-  const confirmPassword = useRef();
-
   // check if all inputs are filled--if true, enable Sign Up button
-  const handleChange = (ev) => {
-    if (password.current.value !== confirmPassword.current.value) {
+  const handleChange = (key, value) => {
+    const data = { ...formData, [key]: value };
+    setFormData(data);
+    console.log(data);
+    if (data.password !== data.confirmPassword) {
       // console.log("Passwords don't match");
       // we need a return to end the function if the passwords don't match
       setValid(false);
@@ -33,27 +35,23 @@ const SignUp = () => {
       return;
     }
     if (
-      firstName.current.value.length > 0 &&
-      lastName.current.value.length > 0 &&
-      email.current.value.length > 0 &&
-      password.current.value.length > 0 &&
-      confirmPassword.current.value.length > 0
+      data.firstName.length > MIN_CHAR &&
+      data.lastName.length > MIN_CHAR &&
+      data.email.length > MIN_CHAR &&
+      data.password.length > MIN_CHAR &&
+      data.confirmPassword.length > MIN_CHAR
     ) {
       setDisabled(false);
     }
     // if all inputs are valid, setValid(true)
     setValid(true);
+    setErrorMessage('');
+    return;
   };
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
     if (valid) {
-      const formData = {
-        firstName: firstName.current.value,
-        lastName: lastName.current.value,
-        email: email.current.value,
-        password: password.current.value,
-      };
       console.log(formData);
       loadingUser();
       fetch(`/api/signup`, {
@@ -66,9 +64,17 @@ const SignUp = () => {
         .then((res) => res.json())
         .then((json) => {
           console.log(json);
-          receivedUserFromServer({ user: json.data });
-          // Go to homepage
-          navigate("/");
+          if (json.status === 200) {
+            receivedUserFromServer({ user: json.data });
+            // Go to homepage
+            navigate("/");
+          }
+          else {
+            setErrorMessage(json.message);
+            setValid(false);
+            setDisabled(true);
+            logoutUser();
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -84,50 +90,41 @@ const SignUp = () => {
       </StyledLogo>
       <Title>Sign up to Le penseur</Title>
       <SignUpForm>
-        <FirstName
+        <Input
           type="text"
-          name="first-name"
-          required
+          name="firstName"
+          required={true}
           placeholder="First Name"
-          ref={firstName}
-          onChange={handleChange}
-        ></FirstName>
-        <LastName
+          handleChange={handleChange}
+        />
+        <Input
           type="text"
-          name="last-name"
-          required
+          name="lastName"
+          required={true}
           placeholder="Last Name"
-          ref={lastName}
-          onChange={handleChange}
-        ></LastName>
+          handleChange={handleChange}
+        />
 
-        <Email
+        <Input
           type="email"
           name="email"
-          required
+          required={true}
           placeholder="E-mail"
-          ref={email}
-          onChange={handleChange}
-        ></Email>
+          handleChange={handleChange}
+        />
 
         <Password
-          type="password"
           name="password"
-          required
+          required={true}
           placeholder="Password"
-          ref={password}
-          onChange={handleChange}
-        ></Password>
-        {/* Show/hide eye icon */}
+          handleChange={handleChange}
+        />
         <ConfirmPassword
-          type="password"
-          name="confirm-password"
-          required
+          name="confirmPassword"
+          required={true}
           placeholder="Confirm Password"
-          ref={confirmPassword}
-          onChange={handleChange}
-        ></ConfirmPassword>
-
+          handleChange={handleChange}
+        />
         <SignUpBtn
           type="submit"
           onClick={(ev) => handleSubmit(ev)}
@@ -135,6 +132,7 @@ const SignUp = () => {
         >
           {status === "loading-user" ? <Loading size="18" /> : "Sign Up"}
         </SignUpBtn>
+        { errorMessage && <ErrorMsg message={errorMessage} width="336px" /> }
       </SignUpForm>
 
       <StyledInfo>
@@ -151,7 +149,7 @@ const Wrapper = styled.div`
   min-height: calc(100vh - 150px);
   padding: 16px;
 `;
-
+const ConfirmPassword = styled(Password)``;
 const StyledLogo = styled.div`
   font-size: 48px;
   margin-bottom: 16px;
@@ -184,18 +182,6 @@ const StyledInfo = styled.div`
   border-radius: 4px;
   width: 336px;
 `;
-
-const StyledInput = styled.input`
-  border: 1px solid ${COLORS.grey};
-  margin-bottom: 12px;
-`;
-
-const FirstName = styled(StyledInput)``;
-const LastName = styled(StyledInput)``;
-const Email = styled(StyledInput)``;
-const Password = styled(StyledInput)``;
-const ConfirmPassword = styled(StyledInput)``;
-
 const SignUpBtn = styled.button`
   border: none;
   background-color: ${COLORS.purple};

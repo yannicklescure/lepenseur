@@ -1,20 +1,11 @@
 import styled from "styled-components";
 import { COLORS } from "../../constants";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Password = ({ name, placehoder, handleChange }) => {
   const [visibility, setVisibility] = useState(false);
   const [type, setType] = useState('password');
-
-  // useEffect(() => {
-  //   if (visibility) {
-  //     setTimeout(() => {
-  //       setVisibility(false);
-  //       setType('password');
-  //     }, 1500);
-  //   }
-  // }, [visibility]);
 
   const handleClick = (ev) => {
     ev.preventDefault();
@@ -29,8 +20,8 @@ const Password = ({ name, placehoder, handleChange }) => {
         type={type}
         name={name}
         required
-        placeholder="Password"
-        onChange={(ev) => handleChange('password', ev.target.value)}
+        placeholder={placehoder}
+        onChange={(ev) => handleChange(name, ev.target.value)}
       />
       <VisibilityBtn
         onClick={(ev) => handleClick(ev)}

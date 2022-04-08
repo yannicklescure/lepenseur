@@ -1,4 +1,11 @@
 export const loginInitialState = {
-  email: '',
-  password: '',
-}
+  email: "",
+  password: "",
+};
+
+export const signUpInitialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+};
