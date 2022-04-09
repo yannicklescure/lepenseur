@@ -10,6 +10,8 @@ import GlobalStyles from "./GlobalStyles";
 import Navbar from "./Navbar";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
+import Settings from "../pages/Settings";
+import Bookmarks from "../pages/Bookmarks";
 
 function App() {
   const {
@@ -25,6 +27,8 @@ function App() {
           <Routes>
             <Route path="*" element={<ErrorPage />} />
             <Route path="/" element={<Homepage />} />
+            <Route path="/bookmarks" element={user._id ? <Bookmarks /> : <Navigate to="/login" replace />} />
+            <Route path="/settings" element={user._id ? <Settings /> : <Navigate to="/login" replace />} />
             <Route path="/login" element={user._id ? <Navigate to="/" replace /> : <Login />} />
             <Route path="/signup" element={user._id ? <Navigate to="/" replace /> : <Signup />} />
             <Route path="/:username" element={<UserPage />} />
@@ -43,7 +47,7 @@ const Wrapper = styled.div`
   min-height: 100vh;
   max-width: 950px;
   margin: 0 auto;
-  padding-top: calc(67px + 16px);
+  padding: calc(67px + 16px) 16px 16px 16px;
 `;
 
 export default App;

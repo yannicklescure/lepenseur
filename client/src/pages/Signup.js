@@ -26,7 +26,6 @@ const SignUp = () => {
   const handleChange = (key, value) => {
     const data = { ...formData, [key]: value };
     setFormData(data);
-    console.log(data);
     if (data.password !== data.confirmPassword) {
       // console.log("Passwords don't match");
       // we need a return to end the function if the passwords don't match

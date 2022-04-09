@@ -25,7 +25,6 @@ const Login = () => {
   // check if all inputs are filled--if true, enable Sign Up button
   const handleChange = (key, value) => {
     const data = { ...formData, [key]: value };
-    console.log(key + ': ' + value);
     setFormData(data);
     data.email.length > MIN_CHAR && data.password.length > MIN_CHAR
       ? setDisabled(false)

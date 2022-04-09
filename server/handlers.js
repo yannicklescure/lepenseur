@@ -47,6 +47,7 @@ const loginUser = async (req, res) => {
         const {
           firstName,
           lastName,
+          userName,
           email,
           _id,
           cart,
@@ -60,6 +61,7 @@ const loginUser = async (req, res) => {
           data: {
             firstName,
             lastName,
+            userName,
             email,
             _id,
             cart,
@@ -115,6 +117,8 @@ const createUser = async (req, res) => {
     }
     const cryptedPassword = await bcrypt.hash(password, 10);
     userArray.password = cryptedPassword;
+    // https://stackoverflow.com/questions/4537227/javascript-replace-special-chars-with-empty-strings
+    userArray.userName = (`${firstName}${lastName}`).toLowerCase().replace(/[^a-zA-Z 0-9]+/g,'');
     const users = await db.collection("users").insertOne(userArray);
     users
       ? res.status(200).json({
