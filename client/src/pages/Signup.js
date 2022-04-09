@@ -95,6 +95,7 @@ const SignUp = () => {
           name="firstName"
           required={true}
           placeholder="First Name"
+          value={formData.firstName}
           handleChange={handleChange}
         />
         <Input
@@ -102,6 +103,7 @@ const SignUp = () => {
           name="lastName"
           required={true}
           placeholder="Last Name"
+          value={formData.lastName}
           handleChange={handleChange}
         />
 
@@ -110,6 +112,7 @@ const SignUp = () => {
           name="email"
           required={true}
           placeholder="E-mail"
+          value={formData.email}
           handleChange={handleChange}
         />
 
@@ -117,11 +120,13 @@ const SignUp = () => {
           name="password"
           required={true}
           placeholder="Password"
+          value={formData.password}
           handleChange={handleChange}
         />
         <ConfirmPassword
           name="confirmPassword"
           required={true}
+          value={formData.confirmPassword}
           placeholder="Confirm Password"
           handleChange={handleChange}
         />
@@ -136,7 +141,7 @@ const SignUp = () => {
       </SignUpForm>
 
       <StyledInfo>
-        Already have an account? <LoginLink to="/login">Login</LoginLink>
+        Already have an account? <StyledLink to="/login">Login</StyledLink>
       </StyledInfo>
     </Wrapper>
   );
@@ -184,7 +189,7 @@ const StyledInfo = styled.div`
 `;
 const SignUpBtn = styled.button`
   border: none;
-  background-color: ${COLORS.purple};
+  background-color: ${COLORS.primary};
   color: ${COLORS.light};
   font-size: 16px;
   padding: 8px 12px;
@@ -200,7 +205,13 @@ const SignUpBtn = styled.button`
       cursor: pointer;
   `};
 `;
+const StyledLink = styled(NavLink)`
+  color: ${COLORS.primary};
+  text-decoration: none;
 
-const LoginLink = styled(NavLink)``;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 
 export default SignUp;

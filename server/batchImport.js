@@ -13,6 +13,7 @@ const options = {
 // const companies = require("./data/companies.json");
 // const items = require("./data/items.json");
 
+// Note: password is 123456789
 const users = [
   {
     _id: uuidv4(),
@@ -20,7 +21,7 @@ const users = [
     lastName: "doe",
     userName: "johndoe",
     email: "johndoe@email.com",
-    password: "qwerty",
+    password: "$2b$10$1NfBT6sxOjooRZHgXAomjeEJjDvZnl6JIy329zaFXUIAUppKQ6PI.",
     cart: [],
   },
   {
@@ -29,7 +30,7 @@ const users = [
     lastName: "rambo",
     userName: "johnrambo",
     email: "johnrambo@email.com",
-    password: "qwerty",
+    password: "$2b$10$1NfBT6sxOjooRZHgXAomjeEJjDvZnl6JIy329zaFXUIAUppKQ6PI.",
     cart: [],
   },
   {
@@ -38,7 +39,7 @@ const users = [
     lastName: "mcfly",
     userName: "martymcfly",
     email: "martymcfly@email.com",
-    password: "qwerty",
+    password: "$2b$10$1NfBT6sxOjooRZHgXAomjeEJjDvZnl6JIy329zaFXUIAUppKQ6PI.",
     cart: [],
   },
 ];

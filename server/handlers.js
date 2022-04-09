@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
-const { MONGO_URI } = process.env;
+const { MONGO_URI, DB_NAME } = process.env;
 
 const option = {
   useNewUrlParser: true,
@@ -15,7 +15,7 @@ const getUsers = async (req, res) => {
   const client = new MongoClient(MONGO_URI, option);
   try {
     await client.connect();
-    const db = client.db("LesMontres");
+    const db = client.db(DB_NAME);
     const result = await db.collection("users").find().toArray();
     result
       ? res.status(200).json({ status: 200, data: result, message: "success" })
@@ -34,7 +34,7 @@ const loginUser = async (req, res) => {
 
   try {
     await client.connect();
-    const db = client.db("LesMontres");
+    const db = client.db(DB_NAME);
     if (!email || !password) {
       return res
         .status(400)
@@ -95,7 +95,7 @@ const createUser = async (req, res) => {
   };
   try {
     await client.connect();
-    const db = client.db("LesMontres");
+    const db = client.db(DB_NAME);
     const emailUsers = await db.collection("users").findOne({ email });
     const emailValidation = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!emailValidation.test(email)) {

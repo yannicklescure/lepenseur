@@ -83,12 +83,14 @@ const Login = () => {
           name="email"
           required={true}
           placeholder="E-mail"
+          value={formData.email}
           handleChange={handleChange}
         />
         <Password
           name="password"
           required={true}
           placeholder="Password"
+          value={formData.password}
           handleChange={handleChange}
         />
         <LoginBtn
@@ -101,7 +103,7 @@ const Login = () => {
       </LoginForm>
       <StyledInfo>
         <div>New to Le penseur?</div>
-        <NavLink to="/signup">Create an account.</NavLink>
+        <StyledLink to="/signup">Create an account.</StyledLink>
       </StyledInfo>
       { errorMessage && <ErrorMsg message={errorMessage} width="336px" /> }
     </Wrapper>
@@ -147,7 +149,7 @@ const StyledInfo = styled.div`
 `;
 const LoginBtn = styled.button`
   border: none;
-  background-color: ${COLORS.purple};
+  background-color: ${COLORS.primary};
   color: ${COLORS.light};
   font-size: 16px;
   padding: 8px 12px;
@@ -162,6 +164,14 @@ const LoginBtn = styled.button`
       : `
       cursor: pointer;
   `};
+`;
+const StyledLink = styled(NavLink)`
+  color: ${COLORS.primary};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export default Login;

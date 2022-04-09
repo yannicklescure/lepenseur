@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import Article from "../pages/Article";
 import ErrorPage from "../pages/ErrorPage";
@@ -8,9 +8,14 @@ import Signup from "../pages/Signup";
 import UserPage from "../pages/UserPage";
 import GlobalStyles from "./GlobalStyles";
 import Navbar from "./Navbar";
-import { BrowserRouter } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 function App() {
+  const {
+    state: { user },
+  } = useContext(UserContext);
+
   return (
     <>
       <BrowserRouter>
@@ -20,8 +25,8 @@ function App() {
           <Routes>
             <Route path="*" element={<ErrorPage />} />
             <Route path="/" element={<Homepage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={user._id ? <Navigate to="/" replace /> : <Login />} />
+            <Route path="/signup" element={user._id ? <Navigate to="/" replace /> : <Signup />} />
             <Route path="/:username" element={<UserPage />} />
             <Route path="/:username/:slug" element={<Article />} />
           </Routes>

@@ -108,7 +108,7 @@ export const UserProvider = ({ children }) => {
 
   const updateUser = (data) => {
     console.log(data);
-    setLocalStorage(data);
+    setLocalStorage(data.user);
     dispatch({
       ...data,
       type: "user-updated",
@@ -131,7 +131,8 @@ export const UserProvider = ({ children }) => {
   };
 
   const receivedUserFromServer = (data) => {
-    setLocalStorage(data);
+    console.log(data);
+    setLocalStorage(data.user);
     dispatch({
       ...data,
       type: "received-user-from-server",

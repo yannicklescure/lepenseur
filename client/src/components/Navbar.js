@@ -3,8 +3,16 @@ import { FaFeatherAlt } from "react-icons/fa";
 import { COLORS } from "../constants";
 import { NavLink } from "react-router-dom";
 import SearchInput from "./SearchInput";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 const Navbar = () => {
+
+  const {
+    state: { user },
+    actions: { logoutUser },
+  } = useContext(UserContext);
+
   return (
     <Wrapper>
       <NavbarDiv>
