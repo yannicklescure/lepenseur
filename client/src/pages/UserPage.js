@@ -5,7 +5,7 @@ const UserPage = () => {
   const userName = params.username;
 
   return (
-    <div>{userName}</div>
+    <div>user: {userName}</div>
   )
 }
 
