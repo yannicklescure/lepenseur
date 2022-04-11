@@ -17,6 +17,7 @@ const getUsers = async (req, res) => {
     await client.connect();
     const db = client.db(DB_NAME);
     const result = await db.collection("users").find().toArray();
+    console.log(result);
     result
       ? res.status(200).json({ status: 200, data: result, message: "success" })
       : res.status(409).json({ status: 409, message: "ERROR" });

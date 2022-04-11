@@ -30,7 +30,6 @@ const Dropdown = ({ open, setOpen }) => {
   // https://blog.pawsible.in.th/little-neat-trick-to-capture-click-outside-with-react-hook-ba77c37c7e82
   // https://codesandbox.io/s/9o3lw5792w?file=/src/Dropdown.js
   const handleClickOutside = e => {
-    console.log("clicking anywhere");
     if (node.current.contains(e.target)) {
       // inside click
       return;
@@ -61,6 +60,9 @@ const Dropdown = ({ open, setOpen }) => {
           <div>Signed in as</div>
           <div>{user.userName}</div>
         </CurrentUser>
+        <StyledIconItem to={`/${user.userName}`}>
+          <div>Your profile</div>
+        </StyledIconItem>
         <StyledIconItem to="/order-history">
           <div>Your orders</div>
         </StyledIconItem>
