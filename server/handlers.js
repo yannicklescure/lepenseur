@@ -11,6 +11,29 @@ const option = {
   useUnifiedTopology: true,
 };
 
+const getUser = async (req, res) => {
+  console.log(req.params);
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    const result = await db.collection("users").findOne({ userName: req.params.username });
+    console.log(result);
+    const { firstName, lastName, userName, imageSrc } = result;
+    let data = { firstName, lastName, userName, imageSrc };
+
+    result
+      ? res.status(200).json({ status: 200, data, message: "success" })
+      : res.status(409).json({ status: 409, message: "Item not found" });
+  } catch (err) {
+    console.log("Error Getting Items", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
 const getUsers = async (req, res) => {
   const client = new MongoClient(MONGO_URI, option);
   try {
@@ -24,6 +47,44 @@ const getUsers = async (req, res) => {
   } catch (err) {
     console.log("Error getting list of users", err);
     res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
+const updateUser = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, option);
+  const { _id } = req.body;
+  const data = req.body;
+  console.log(data);
+
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    const user = await db.collection("users").findOne({ _id });
+
+    console.log(user);
+    if (user) {
+      const result = await db.collection("users").updateOne(
+        { _id },
+        {
+          $set: data,
+        }
+      );
+
+      console.log(result);
+      return res.status(200).json({
+        status: 200,
+        message: `User updated`,
+      });
+    } else {
+      return res.status(400).json({
+        status: 400,
+        message: `Not able to add Cart to database, user not found`,
+      });
+    }
+  } catch (err) {
+    console.log(err);
   } finally {
     client.close();
   }
@@ -54,6 +115,7 @@ const loginUser = async (req, res) => {
           cart,
           bookmarks,
           ordersHistory,
+          imageSrc,
         } = loginAuth;
 
         return res.status(200).json({
@@ -68,6 +130,7 @@ const loginUser = async (req, res) => {
             cart,
             bookmarks,
             ordersHistory,
+            imageSrc,
           },
         });
       } else
@@ -99,7 +162,7 @@ const createUser = async (req, res) => {
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    const emailUsers = await db.collection("users").findOne({ email });
+    const user = await db.collection("users").findOne({ email });
     const emailValidation = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!emailValidation.test(email)) {
       return res
@@ -111,7 +174,7 @@ const createUser = async (req, res) => {
         .status(409)
         .json({ status: 409, message: "Add your credentials" });
     }
-    if (emailUsers) {
+    if (user) {
       return res
         .status(400)
         .json({ status: 400, message: "User already exists" });
@@ -120,8 +183,8 @@ const createUser = async (req, res) => {
     userArray.password = cryptedPassword;
     // https://stackoverflow.com/questions/4537227/javascript-replace-special-chars-with-empty-strings
     userArray.userName = (`${firstName}${lastName}`).toLowerCase().replace(/[^a-zA-Z 0-9]+/g,'');
-    const users = await db.collection("users").insertOne(userArray);
-    users
+    const result = await db.collection("users").insertOne(userArray);
+    result
       ? res.status(200).json({
           status: 200,
           data: {
@@ -144,9 +207,11 @@ const createUser = async (req, res) => {
 };
 
 module.exports = {
+  getUser,
   getUsers,
   createUser,
   loginUser,
+  updateUser,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,

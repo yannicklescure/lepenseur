@@ -63,7 +63,7 @@ const Dropdown = ({ open, setOpen }) => {
         <StyledIconItem to={`/${user.userName}`}>
           <div>Your profile</div>
         </StyledIconItem>
-        <StyledIconItem to="/order-history">
+        <StyledIconItem to="/orders-history">
           <div>Your orders</div>
         </StyledIconItem>
         <StyledIconItem to="/bookmarks">

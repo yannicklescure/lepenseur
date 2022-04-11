@@ -32,13 +32,31 @@ const Navbar = () => {
                 <SearchInput />
               </Container>
               <Container>
-                <StyledIconMenu>
-                  <StyledIconBtn
-                    onClick={handleClickUser}
-                    open={open}
-                  >
-                    <AiOutlineUser size="25" />
-                  </StyledIconBtn>
+                <StyledIconMenu>                  
+                    {
+                      user.imageSrc === "undefined"
+                      ? (
+                        <StyledIconBtn
+                          onClick={handleClickUser}
+                          open={open}
+                        >
+                          <AiOutlineUser size="25" />
+                        </StyledIconBtn>
+                      )
+                      : (
+                        <StyledImageBtn
+                          onClick={handleClickUser}
+                          open={open}
+                        >
+                          <UserImage
+                            src={user.imageSrc}
+                            alt={user.userName}
+                            open={open}
+                          />
+                        </StyledImageBtn>
+                      )
+                    }
+                  
                   <Dropdown
                     open={open}
                     setOpen={setOpen}
@@ -120,6 +138,14 @@ const SignupLink = styled(StyledLink)`
     border: 1px solid ${COLORS.primary};
   }
 `;
+const StyledImageBtn = styled.button`
+  background: none;
+  border: none;
+  outline: none;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+`;
 const StyledIconBtn = styled.button`
   background: none;
   border: none;
@@ -142,6 +168,20 @@ const StyledIconMenu = styled.div`
     color: ${COLORS.grey};
     border: 1px solid ${COLORS.grey};
   } */
+`;
+const UserImage = styled.img`
+  width: 35px;
+  height: 35px;
+  object-fit: cover;
+  border-radius: 50%;
+  ${({open}) => open ? `
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
+    filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
+  ` : `
+    -webkit-filter: grayscale(0);
+    filter: none;
+  `};
 `;
 
 export default Navbar;

@@ -6,9 +6,11 @@ const cors = require("cors");
 const helmet = require("helmet");
 
 const {
+  getUser,
   getUsers,
   createUser,
   loginUser,
+  updateUser,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
@@ -44,6 +46,8 @@ if (process.env.NODE_ENV === 'developement') {
 }
 
 app.get("/api/users", getUsers)
+app.get("/api/users/:username", getUser)
+app.put("/api/users", updateUser)
 app.post("/api/login", loginUser)
 app.post("/api/signup", createUser)
 

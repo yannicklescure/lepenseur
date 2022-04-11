@@ -12,3 +12,9 @@ export const fullWrittenDate = (date, lang = 'en-US') => {
     }
   );
 }
+
+export const capitalizeStr = (str) => {
+  const left = str.slice(0,1).toUpperCase();
+  const right = str.slice(1, str.length);
+  return left + right;
+}

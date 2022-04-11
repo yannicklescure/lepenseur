@@ -23,6 +23,7 @@ const users = [
     email: "johndoe@email.com",
     password: "$2b$10$1NfBT6sxOjooRZHgXAomjeEJjDvZnl6JIy329zaFXUIAUppKQ6PI.",
     cart: [],
+    imageSrc: "undefined",
   },
   {
     _id: uuidv4(),
@@ -32,6 +33,7 @@ const users = [
     email: "johnrambo@email.com",
     password: "$2b$10$1NfBT6sxOjooRZHgXAomjeEJjDvZnl6JIy329zaFXUIAUppKQ6PI.",
     cart: [],
+    imageSrc: "undefined",
   },
   {
     _id: uuidv4(),
@@ -41,6 +43,7 @@ const users = [
     email: "martymcfly@email.com",
     password: "$2b$10$1NfBT6sxOjooRZHgXAomjeEJjDvZnl6JIy329zaFXUIAUppKQ6PI.",
     cart: [],
+    imageSrc: "undefined",
   },
 ];
 

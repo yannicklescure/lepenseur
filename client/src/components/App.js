@@ -12,6 +12,8 @@ import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 import Settings from "../pages/Settings";
 import Bookmarks from "../pages/Bookmarks";
+import Edit from "../pages/settings/Edit";
+import Orders from "../pages/Orders";
 
 function App() {
   const {
@@ -27,11 +29,13 @@ function App() {
           <Routes>
             <Route path="*" element={<ErrorPage />} />
             <Route path="/" element={<Homepage />} />
+            <Route path="/orders-history" element={user._id ? <Orders /> : <Navigate to="/login" replace />} />
             <Route path="/bookmarks" element={user._id ? <Bookmarks /> : <Navigate to="/login" replace />} />
             <Route path="/settings" element={user._id ? <Settings /> : <Navigate to="/login" replace />} />
             <Route path="/login" element={user._id ? <Navigate to="/" replace /> : <Login />} />
             <Route path="/signup" element={user._id ? <Navigate to="/" replace /> : <Signup />} />
             <Route path="/:username" element={<UserPage />} />
+            <Route path="/:username/edit" element={<Edit />} />
             <Route path="/:username/:slug" element={<Article />} />
           </Routes>
         </Wrapper>
