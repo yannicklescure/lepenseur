@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useRef, useContext } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { COLORS, MIN_CHAR } from "../constants";
 import { UserContext } from "../contexts/UserContext";
@@ -7,7 +7,7 @@ import Loading from "../components/Loading/Loading";
 import { FaFeatherAlt } from "react-icons/fa";
 import Input from "../components/inputs/Input";
 import Password from "../components/inputs/Password";
-import { signUpInitialState } from "../settings";
+import { initialStates } from "../settings";
 import ErrorMsg from "../components/ErrorMsg";
 
 const SignUp = () => {
@@ -15,7 +15,7 @@ const SignUp = () => {
   const [disabled, setDisabled] = useState(true);
   const [valid, setValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [formData, setFormData] = useState(signUpInitialState);
+  const [formData, setFormData] = useState(initialStates.signUp);
 
   const {
     state: { status },

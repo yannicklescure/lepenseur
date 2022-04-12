@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import { UserContext } from "../contexts/UserContext";
+import { UserContext } from "../../contexts/UserContext";
 
 const Settings = () => {
   const {

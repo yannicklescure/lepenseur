@@ -158,6 +158,7 @@ const createUser = async (req, res) => {
     cart: [],
     bookmarks: [],
     ordersHistory: [],
+    imageSrc: "undefined"
   };
   try {
     await client.connect();
@@ -195,6 +196,7 @@ const createUser = async (req, res) => {
             cart: userArray.cart,
             bookmarks: userArray.bookmarks,
             ordersHistory: userArray.ordersHistory,
+            imageSrc: "undefined"
           },
           message: "User Created",
         })

@@ -32,3 +32,4 @@ export const COLORS = {
 // ${COLORS.danger}
 
 export const MIN_CHAR = 3;
+export const TEXTAREA_HEIGHT = 300;

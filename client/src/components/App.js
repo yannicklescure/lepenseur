@@ -12,8 +12,9 @@ import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 import Settings from "../pages/Settings";
 import Bookmarks from "../pages/Bookmarks";
-import Edit from "../pages/settings/Edit";
+import Edit from "../pages/Settings/Edit";
 import Orders from "../pages/Orders";
+import NewStory from "../pages/NewStory";
 
 function App() {
   const {
@@ -29,6 +30,7 @@ function App() {
           <Routes>
             <Route path="*" element={<ErrorPage />} />
             <Route path="/" element={<Homepage />} />
+            <Route path="/new-story" element={user._id ? <NewStory /> : <Navigate to="/login" replace />} />
             <Route path="/orders-history" element={user._id ? <Orders /> : <Navigate to="/login" replace />} />
             <Route path="/bookmarks" element={user._id ? <Bookmarks /> : <Navigate to="/login" replace />} />
             <Route path="/settings" element={user._id ? <Settings /> : <Navigate to="/login" replace />} />

@@ -2,12 +2,12 @@ import { createContext, useEffect, useReducer } from "react";
 import usePersistedState from "../hooks/usePersistedState";
 import { initialStates } from "../settings";
 
-export const UserContext = createContext(null);
+export const StoryContext = createContext(null);
 
 const initialState = {
   status: "idle",
   hasLoaded: false,
-  user: initialStates.user,
+  story: initialStates.story,
   message: null,
   type: "initial",
 };
@@ -19,47 +19,40 @@ const reducer = (state, action) => {
         ...initialState
       };
     }
-    case "loading-user-from-server": {
+    case "loading-story-from-server": {
       return {
         ...state,
-        status: "loading-user",
+        status: "loading-story",
       };
     }
-    case "received-user-from-server": {
+    case "received-story-from-server": {
       return {
         ...state,
         ...action,
         loggedIn: true,
         hasLoaded: true,
-        status: "user-loaded",
+        status: "story-loaded",
       };
     }
-    case "received-user-from-storage": {
+    case "received-story-from-storage": {
       return {
         ...state,
         ...action,
-        status: "user-loaded",
+        status: "story-loaded",
       };
     }
-    case "user-updated": {
+    case "story-updated": {
       return {
         ...state,
         ...action,
-        status: "user-updated",
+        status: "story-updated",
       };
     }
-    case "delete-user": {
+    case "delete-story": {
       return {
         ...state,
         ...action,
-        status: "user-deleted",
-      };
-    }
-    case "logout-user": {
-      return {
-        ...state,
-        ...action,
-        status: "user-logged-out",
+        status: "story-deleted",
       };
     }
     case "error-from-server": {
@@ -69,70 +62,84 @@ const reducer = (state, action) => {
         status: "error-from-server",
       };
     }
+    case "ready-to-publish": {
+      return {
+        ...state,
+        ...action,
+        status: "ready-to-publish",
+      };
+    }
     default: {
       throw new Error(`Unrecognized action: ${action.type}`);
     }
   }
 };
 
-export const UserProvider = ({ children }) => {
-  const [localStorage, setLocalStorage] = usePersistedState("user", {});
+export const StoryProvider = ({ children }) => {
+  const [localStorage, setLocalStorage] = usePersistedState("story", {});
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     // console.log(localStorage);
-    if (localStorage?.user?._id) {
+    if (localStorage?.story?._id) {
       dispatch({
         hasLoaded: true,
-        user: localStorage.user,
+        story: localStorage.story,
         message: "data loaded from storage",
-        type: "received-user-from-storage",
+        type: "received-story-from-storage",
       });
     }
     // eslint-disable-next-line
   }, []);
 
-  const loadingUser = () => {
+  const initialStory = () => {
     dispatch({
-      type: "loading-user-from-server",
+      type: "initial",
     });
   };
 
-  const updateUser = (data) => {
+  const loadingStory = () => {
+    dispatch({
+      type: "loading-story-from-server",
+    });
+  };
+
+  const updateStory = (data) => {
     console.log(data);
     setLocalStorage(data);
     dispatch({
       ...data,
-      type: "user-updated",
+      type: "story-updated",
     });
   };
 
-  const deleteUser = (data) => {
+  const deleteStory = (data) => {
     dispatch({
       ...data,
-      type: "delete-user",
+      type: "delete-story",
     });
   };
 
-  const logoutUser = (data) => {
-    setLocalStorage({});
-    dispatch({
-      ...initialState,
-      type: "logout-user",
-    });
-  };
-
-  const receivedUserFromServer = (data) => {
+  const readyToPublish = (data) => {
     console.log(data);
     setLocalStorage(data);
     dispatch({
       ...data,
-      type: "received-user-from-server",
+      type: "ready-to-publish",
     });
   };
 
-  const errorFromServerUser = (data) => {
+  const receivedStoryFromServer = (data) => {
+    console.log(data);
+    setLocalStorage(data);
+    dispatch({
+      ...data,
+      type: "received-story-from-server",
+    });
+  };
+
+  const errorStoryFromServer = (data) => {
     dispatch({
       ...data,
       type: "error-from-server",
@@ -140,20 +147,21 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider
+    <StoryContext.Provider
       value={{
         state,
         actions: {
-          loadingUser,
-          receivedUserFromServer,
-          errorFromServerUser,
-          deleteUser,
-          updateUser,
-          logoutUser,
+          loadingStory,
+          receivedStoryFromServer,
+          errorStoryFromServer,
+          deleteStory,
+          updateStory,
+          readyToPublish,
+          initialStory,
         },
       }}
     >
       {children}
-    </UserContext.Provider>
+    </StoryContext.Provider>
   );
 };

@@ -1,15 +1,30 @@
 import styled from "styled-components";
 import { FaFeatherAlt } from "react-icons/fa";
 import { COLORS } from "../../constants";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import SearchInput from "../SearchInput";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext";
 import { AiOutlineUser } from "react-icons/ai";
 import Dropdown from "./Dropdown";
+import { FaBookmark, FaRegBookmark, FaPenSquare } from "react-icons/fa";
+import { StoryContext } from "../../contexts/StoryContext";
 
 const Navbar = () => {
+  const location = useLocation();
+  console.log(location);
+
   const [open, setOpen] = useState(false);
+  const [ready, setReady] = useState(false);
+  
+  const {
+    state: { status },
+  } = useContext(StoryContext);
+  
+  useEffect(() => {
+    if (status === "ready-to-publish") setReady(true);
+    else setReady(false);
+  }, [status]);
   
   const {
     state: { user },
@@ -32,6 +47,20 @@ const Navbar = () => {
                 <SearchInput />
               </Container>
               <Container>
+                {
+                  location.pathname === '/new-story'
+                    ? (<PublishBtn ready={ready} disabled={ready}>Publish</PublishBtn>)
+                    : (
+                      <>
+                        <NewStory to="/new-story">
+                          <FaPenSquare />
+                        </NewStory>
+                        <NavItem to="/bookmarks">
+                          { user.bookmarks.length === 0 ? <FaRegBookmark /> : <FaBookmark /> }
+                        </NavItem>
+                      </>
+                    )
+                }
                 <StyledIconMenu>                  
                     {
                       user.imageSrc === "undefined"
@@ -182,6 +211,28 @@ const UserImage = styled.img`
     -webkit-filter: grayscale(0);
     filter: none;
   `};
+`;
+const NavItem = styled(NavLink)`
+  color: ${COLORS.dark};
+  font-size: 18px;
+  transition: all 400ms ease;
+  
+  &:hover {
+    color: ${COLORS.primary};
+  }
+`;
+const NewStory = styled(NavItem)`
+  font-size: 20px;
+`;
+const PublishBtn = styled.button`
+  border: none;
+  outline: none;
+  background-color: ${({ready}) => ready ? 'rgba(50, 135, 82, 1)' : 'rgba(50, 135, 82, 80%)'};
+  padding: 8px 12px;
+  color: ${COLORS.light};
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: ${({ready}) => ready ? 'pointer' : 'not-allowed'};
 `;
 
 export default Navbar;

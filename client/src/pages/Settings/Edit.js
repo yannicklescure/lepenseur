@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { UserContext } from "../../contexts/UserContext";
-import Picture from "./Picture";
+import Picture from "../../components/Picture";
 
 const Edit = () => {
   const {

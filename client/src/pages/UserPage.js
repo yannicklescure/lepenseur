@@ -18,7 +18,7 @@ const UserPage = () => {
     fetch(`/api/users/${userName}`)
       .then((res) => res.json())
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setUser(response.data);
         setLoading(false);
       });

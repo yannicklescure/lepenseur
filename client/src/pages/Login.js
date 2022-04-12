@@ -5,7 +5,7 @@ import { COLORS, MIN_CHAR } from "../constants";
 import { UserContext } from "../contexts/UserContext";
 import Loading from "../components/Loading/Loading";
 import { FaFeatherAlt } from "react-icons/fa";
-import { loginInitialState } from "../settings";
+import { initialStates } from "../settings";
 import Password from "../components/inputs/Password";
 import Input from "../components/inputs/Input";
 import ErrorMsg from "../components/ErrorMsg";
@@ -14,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
   const [valid, setValid] = useState(false);
-  const [formData, setFormData] = useState(loginInitialState);
+  const [formData, setFormData] = useState(initialStates.login);
   const [errorMessage, setErrorMessage] = useState('');
   const [forceUpdate, setForceUpdate] = useState(0);
   const {

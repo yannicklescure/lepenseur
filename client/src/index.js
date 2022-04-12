@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './contexts/UserContext';
+import { StoryProvider } from './contexts/StoryContext';
 
 // Hide all app console.logs
 if (process.env.NODE_ENV !== "development") console.log = () => {};
@@ -11,7 +12,9 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
   <UserProvider>
+  <StoryProvider>
     <App />
+  </StoryProvider>
   </UserProvider>
 );
 
