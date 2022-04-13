@@ -87,13 +87,15 @@ const Triangle = styled.div`
   display: ${({open}) => open ? 'block' : 'none'};
   content: '';
   position: absolute;
-  right: 5px;
-  top: 36px;
-  width: 0; 
-  height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-bottom: 12px solid ${COLORS.grey};
+  right: 12px;
+  top: 39px;
+  width: 10px;
+  height: 10px;
+  background-color: ${COLORS.white};
+  transform: rotate(45deg);
+  z-index: 5;
+  border-top: 1px solid ${COLORS.grey};
+  border-left: 1px solid ${COLORS.grey};
 `;
 const Logout = styled.button`
   background: none;
@@ -115,7 +117,7 @@ const StyledIconSubMenu = styled.div`
   background-color: ${COLORS.white};
   min-width: 154px;
   font-size: 16px;
-  z-index: 1000;
+  z-index: 1;
   border: 1px solid ${COLORS.grey};
   border-radius: 4px;
 
