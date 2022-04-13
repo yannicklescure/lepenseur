@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import styled from "styled-components";
-import Loading from "../components/Loading/Loading";
+import Loading from "../components/Loading";
 import { UserContext } from "../contexts/UserContext";
 
 const Articles = () => {

@@ -266,25 +266,33 @@ const getStory = async (req, res) => {
         imageSrc: result.imageSrc, 
         _id: result._id
       };
-      switch (result.visibility) {
-        case 'unlisted':
+      const switchVisibility = {
+        unlisted: () => {
           if (result.visibility === 'unlisted' && req.query._id !== result.userId) {
             data = {};
-            res.status(404).json({ status: 404, message: "Item not found" });
+            return res.status(404).json({ status: 404, message: "Item not found" });
           }
           else {
-            res.status(200).json({ status: 200, data, message: "success" });
+            return res.status(200).json({ status: 200, data, message: "success" });
           }
-          break;
-        case 'private':
-          res.status(200).json({ status: 200, data, message: "success" });
-          break;
-        case 'public':
-          res.status(200).json({ status: 200, data, message: "success" });
-          break;
-        default:
-          res.status(409).json({ status: 409, message: "Item not found" });
-      }     
+        },
+        private: () => {
+          if (result.visibility === 'unlisted' && req.query._id !== result.userId) {
+            data = {};
+            return res.status(404).json({ status: 404, message: "Item not found" });
+          }
+          else {
+            return res.status(200).json({ status: 200, data, message: "success" });
+          }
+        },
+        public: () => {
+          return res.status(200).json({ status: 200, data, message: "success" });
+        }
+      }
+      // Increase server response by using an object instead of conditionnal switch/if
+      // https://medium.com/@neelesh-arora/stop-using-conditional-statements-everywhere-in-javascript-use-an-object-literal-instead-e780debcda18
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
+      switchVisibility[result.visibility]() ?? res.status(409).json({ status: 409, message: "Item not found" });
     }
     else {
       res.status(409).json({ status: 409, message: "Item not found" });

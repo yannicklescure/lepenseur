@@ -53,13 +53,16 @@ const Picture = ({ from }) => {
       useWebWorker: true
     }
     try {
-      // https://github.com/Donaldcwl/browser-image-compression
-      const compressedFile = await imageCompression(imageFile, options);
-      // console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
-      // console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
-      const base64 = await convertBase64(compressedFile);
-      // console.log(base64.length);
-      // await uploadToServer(compressedFile); // write your own logic
+      let base64 = await convertBase64(imageFile);
+
+      if (base64.length >= 5200000) {
+        // https://github.com/Donaldcwl/browser-image-compression
+        const compressedFile = await imageCompression(imageFile, options);
+        // console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+        // console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+        base64 = await convertBase64(compressedFile);
+        // console.log(base64.length);
+      }
       setImageSrc(base64);
       setLoading(false);
       if (from === 'story') {
