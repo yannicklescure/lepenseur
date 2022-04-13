@@ -9,7 +9,9 @@ import { AiOutlineUser } from "react-icons/ai";
 import Dropdown from "./Dropdown";
 import { FaBookmark, FaRegBookmark, FaPenSquare } from "react-icons/fa";
 import Cookies from 'universal-cookie';
-import Publish from "../buttons/Publish";
+import PublishStory from "../buttons/PublishStory";
+import { StoryContext } from "../../contexts/StoryContext";
+import UpdateStory from "../buttons/UpdateStory";
 
 const Navbar = () => {
   // const navigate = useNavigate();
@@ -28,7 +30,11 @@ const Navbar = () => {
   
   const {
     state: { user },
-  } = useContext(UserContext);  
+  } = useContext(UserContext);
+
+  const {
+    state: { status },
+  } = useContext(StoryContext);
     
   const handleClickUser = () => {
     if (!open) setOpen(true);
@@ -50,8 +56,10 @@ const Navbar = () => {
                 {
                   location.pathname === '/new-story'
                     ? (
-                      <Publish />
+                      <PublishStory />
                       )
+                    : status === "ready-to-update"
+                    ? <UpdateStory />
                     : (
                       <>
                         <NewStory to="/new-story">

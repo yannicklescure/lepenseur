@@ -69,6 +69,13 @@ const reducer = (state, action) => {
         status: "ready-to-publish",
       };
     }
+    case "ready-to-update": {
+      return {
+        ...state,
+        ...action,
+        status: "ready-to-update",
+      };
+    }
     default: {
       throw new Error(`Unrecognized action: ${action.type}`);
     }
@@ -131,6 +138,15 @@ export const StoryProvider = ({ children }) => {
     });
   };
 
+  const readyToUpdate = (data) => {
+    // console.log(data);
+    setLocalStorage(data);
+    dispatch({
+      ...data,
+      type: "ready-to-update",
+    });
+  };
+
   const receivedStoryFromServer = (data) => {
     console.log(data);
     setLocalStorage(data);
@@ -159,6 +175,7 @@ export const StoryProvider = ({ children }) => {
           updateStory,
           readyToPublish,
           initialStory,
+          readyToUpdate,
         },
       }}
     >

@@ -14,6 +14,7 @@ const {
   createStory,
   getStory,
   getStories,
+  updateStory,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
@@ -52,8 +53,9 @@ if (process.env.NODE_ENV === 'developement') {
 
 app.get("/api/users", getUsers)
 app.get("/api/users/:username", getUser)
-app.get("/api/stories/:username/:slug", getStory)
 app.get("/api/stories/:username", getStories)
+app.get("/api/stories/:username/:slug", getStory)
+app.put("/api/stories/:username/:slug", updateStory)
 app.put("/api/users", updateUser)
 app.post("/api/stories", createStory)
 app.post("/api/login", loginUser)

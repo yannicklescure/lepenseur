@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Spinner from './Spinner';
 
-const Loading = ({size = 40}) => {
+const Loading = ({size = 32}) => {
   return (
     <Container>
       <Spinner size={size} />

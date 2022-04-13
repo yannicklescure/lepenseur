@@ -9,7 +9,7 @@ import { MIN_CHAR } from "../constants";
 // code inspired from 
 // https://stackoverflow.com/questions/36580196/reactjs-base64-file-upload
 
-const Picture = ({ from }) => {
+const Picture = ({ from, article = undefined }) => {
   const {
     state: { user },
     actions: { updateUser },
@@ -17,7 +17,7 @@ const Picture = ({ from }) => {
 
   const {
     state: { story },
-    actions: { initialStory, readyToPublish, updateStory },
+    actions: { initialStory, readyToPublish, updateStory, readyToUpdate },
   } = useContext(StoryContext);
 
   const [imageSrc, setImageSrc] = useState(undefined);
@@ -25,6 +25,7 @@ const Picture = ({ from }) => {
 
   useEffect(() => {
     let imgSrc = undefined;
+    if (from === 'editStory') imgSrc = article.imageSrc;
     if (from === 'story') imgSrc = story.imageSrc;
     if (from === 'user') imgSrc = user.imageSrc;
     setImageSrc(imgSrc);
@@ -65,11 +66,13 @@ const Picture = ({ from }) => {
       }
       setImageSrc(base64);
       setLoading(false);
-      if (from === 'story') {
+      if (from === 'story' || from === 'editStory') {
         const data = story;
         data.imageSrc = base64;
         if (data.content.length > MIN_CHAR && data.title.length > MIN_CHAR && data.imageSrc !== "undefined") {
-          readyToPublish({ story: data });
+          from === 'editStory'
+            ? readyToUpdate({ story: data })
+            : readyToPublish({ story: data })
         }
         else if (data.content.length > MIN_CHAR || data.title.length > MIN_CHAR) {
           updateStory({ story: data });

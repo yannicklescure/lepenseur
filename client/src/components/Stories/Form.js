@@ -5,31 +5,42 @@ import { StoryContext } from "../../contexts/StoryContext";
 import { UserContext } from "../../contexts/UserContext";
 import { slugify } from "../../helpers";
 import { initialStates } from "../../settings";
+import Loading from "../Loading";
 
-const Form = () => {
+const Form = ({ from = undefined, article = undefined }) => {
   const textarea = useRef();
   const [scrollHeight, setScrollHeight] = useState(TEXTAREA_HEIGHT);
   const [formData, setFormData] = useState(initialStates.story);
+  const [loading, setLoading] = useState(true);
 
   const {
     state: { story },
-    actions: { initialStory, readyToPublish, updateStory },
+    actions: { initialStory, readyToPublish, updateStory, readyToUpdate },
   } = useContext(StoryContext);
   
   const {
     state: { user },
-  } = useContext(UserContext);  
+  } = useContext(UserContext);
 
   useEffect(() => {
-    const { content, title } = story;
-    const userId = user._id;
-    const slug = slugify(title);
-    const timestamp = new Date().getTime();
-    const data = { ...story, content, title, userId, slug, timestamp };
-
+    let data = {};
+    if (article) {
+      data = article;
+    }
+    else {
+      const { content, title } = story;
+      const userId = user._id;
+      const slug = slugify(title);
+      const timestamp = new Date().getTime();
+      data = { ...story, content, title, userId, slug, timestamp };
+  
+    }
     setFormData(data);
+    setLoading(false);
     if (data.content.length > MIN_CHAR && data.title.length > MIN_CHAR && data.imageSrc !== "undefined") {
-      readyToPublish({ story: data });
+      from === 'editStory'
+        ? readyToUpdate({ story: data })
+        : readyToPublish({ story: data })
     }
     else if (data.content.length > MIN_CHAR || data.title.length > MIN_CHAR) {
       updateStory({ story: data });
@@ -47,12 +58,15 @@ const Form = () => {
 
     const data = { ...story, [key]: value };
     data.userId = user._id;
-    data.username = user.username;
     data.slug = slugify(data.title);
+    data.username = user.username;
+    data.visibility = 'public';
     setFormData(data);
     
     if (data.content.length > MIN_CHAR && data.title.length > MIN_CHAR && data.imageSrc !== "undefined") {
-      readyToPublish({ story: data });
+      from === 'editStory'
+        ? readyToUpdate({ story: data })
+        : readyToPublish({ story: data })
     }
     else if (data.content.length > MIN_CHAR || data.title.length > MIN_CHAR) {
       updateStory({ story: data });
@@ -61,6 +75,8 @@ const Form = () => {
       initialStory();
     }
   };
+
+  if (loading) return <Loading size="32" />
 
   return (
     <>

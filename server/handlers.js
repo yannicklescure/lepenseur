@@ -230,6 +230,9 @@ const createStory = async (req, res) => {
     const db = client.db(DB_NAME);
     
     const result = await db.collection("stories").insertOne(newStory);
+    newStory.createdAt = new Date().getTime();
+    newStory.updatedAt = new Date().getTime();
+
     result
       ? res.status(200).json({
           status: 200,
@@ -239,6 +242,66 @@ const createStory = async (req, res) => {
       : res.status(409).json({ status: 409, message: "ERROR" });
   } catch (err) {
     console.log(err);
+  } finally {
+    client.close();
+  }
+};
+
+const updateStory = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, option);
+  const { _id, title, content, userId, imageSrc, visibility, slug, username } = req.body;
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+
+    const story = await db.collection("stories").findOne({ _id });
+    console.log(story);
+
+    if (story) {
+      // const updatedStory = {};
+      // if (story.slug !== slug) updatedStory.slug = slug;
+      // if (story.title !== title) updatedStory.title = title;
+      // if (story.content !== content) updatedStory.content = content;
+      // if (story.userId !== userId) updatedStory.userId = userId;
+      // if (story.imageSrc !== imageSrc) updatedStory.imageSrc = imageSrc;
+      // if (story.visibility !== visibility) updatedStory.visibility = visibility;
+      // if (story.username !== username) updatedStory.username = username;
+      // updatedStory.updatedAt = new Date().getTime();
+      const updatedStory = {
+        ...story,
+        title, 
+        content, 
+        userId, 
+        imageSrc, 
+        visibility, 
+        slug, 
+        username,
+        updatedAt: new Date().getTime()
+      };
+      console.log(updatedStory);
+
+      const result = await db.collection("stories").updateOne(
+        { _id },
+        {
+          $set: updatedStory,
+        }
+      );
+      console.log(result);
+      result
+        ? res.status(200).json({
+            status: 200,
+            data: updatedStory,
+            message: "Story updated",
+          })
+        : res.status(409).json({ status: 409, message: "ERROR" });
+    }
+    else {
+      res.status(404).json({ status: 404, message: "Item not found" });
+    }
+    
+  } catch (err) {
+    console.log("Error", err);
+    res.status(500).json({ status: 500, message: err });
   } finally {
     client.close();
   }
@@ -260,7 +323,8 @@ const getStory = async (req, res) => {
     // console.log(result);
     let data = {};
     if (result) {
-      const { title, content, imageSrc, createdAt, updatedAt, _id } = result;
+      const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username } = result;
+      const user = await db.collection("users").findOne({ _id: userId });
       data = {
         _id,
         content,
@@ -268,6 +332,15 @@ const getStory = async (req, res) => {
         imageSrc,
         title,
         updatedAt,
+        user: {
+          _id: userId,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          imageSrc: user.imageSrc,
+          username,
+        },
+        slug,
+        visibility,
       };
       const switchVisibility = {
         unlisted: () => {
@@ -326,7 +399,7 @@ const getStories = async (req, res) => {
       res.status(404).json({ status: 404, message: "Item not found" });
     }
   } catch (err) {
-    console.log("Error Getting Items", err);
+    console.log("Error", err);
     res.status(500).json({ status: 500, message: err });
   } finally {
     client.close();
@@ -342,6 +415,7 @@ module.exports = {
   createStory,
   getStory,
   getStories,
+  updateStory,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,

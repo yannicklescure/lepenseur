@@ -1,11 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Loading from "../components/Loading";
-import Article from "../components/Article";
-import { UserContext } from "../contexts/UserContext";
-import NotFound from "./NotFound";
+import Loading from "../../components/Loading";
+import Article from "../../components/Article";
+import { UserContext } from "../../contexts/UserContext";
+import NotFound from "../NotFound";
+import Form from "../../components/Stories/Form";
+import Picture from "../../components/Picture";
 
-const ArticlePage = () => {
+const ArticleEdit = () => {
   const params = useParams();
   // console.log(params);
   const { username, slug } = params;
@@ -55,8 +57,11 @@ const ArticlePage = () => {
   if (visibility === 'not-found') return <NotFound />;
 
   return (
-    <Article user={user} article={article} />
+    <>
+      <Form from="editStory" article={article} />
+      <Picture from="editStory" article={article} />
+    </>
   )
 }
 
-export default ArticlePage;
+export default ArticleEdit;

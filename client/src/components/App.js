@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import Article from "../pages/Article";
+import ArticleEdit from "../pages/Article/Edit";
 import ErrorPage from "../pages/ErrorPage";
 import Homepage from "../pages/Homepage";
 import Login from "../pages/Login";
@@ -41,6 +42,7 @@ function App() {
             <Route path="/:username/edit" element={user._id ? <Edit /> : <Navigate to="/login" replace />} />
             <Route path="/:username/articles" element={user._id ? <Articles /> : <Navigate to="/login" replace />} />
             <Route path="/:username/:slug" element={<Article />} />
+            <Route path="/:username/:slug/edit" element={user._id ? <ArticleEdit /> : <Navigate to="/login" replace />} />
           </Routes>
         </Wrapper>
       </BrowserRouter>
