@@ -260,11 +260,14 @@ const getStory = async (req, res) => {
     // console.log(result);
     let data = {};
     if (result) {
-      data = { 
-        title: result.title,
-        content: result.content, 
-        imageSrc: result.imageSrc, 
-        _id: result._id
+      const { title, content, imageSrc, createdAt, updatedAt, _id } = result;
+      data = {
+        _id,
+        content,
+        createdAt,
+        imageSrc,
+        title,
+        updatedAt,
       };
       const switchVisibility = {
         unlisted: () => {

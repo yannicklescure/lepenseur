@@ -16,6 +16,7 @@ export const COLORS = {
   info: "#41caef",
   purple: "#7952b3",
   grey: "#cccccc",
+  code: "#f2f2f2",
   orange: "#f79d00",
   peachy: "#E9D8D3",
   red: "#ff0000",

@@ -17,6 +17,8 @@ export const initialStates = {
     userId: null,
     imageSrc: "undefined",
     visibility: "unlisted",
+    createdAt: "0", 
+    updatedAt: "0",
   },
   user: {
     _id: null,
@@ -27,5 +29,7 @@ export const initialStates = {
     bookmarks: [],
     ordersHistory: [],
     imageSrc: "undefined",
+    createdAt: "0", 
+    updatedAt: "0",
   }
 }

@@ -24,7 +24,8 @@ const Form = () => {
     const { content, title } = story;
     const userId = user._id;
     const slug = slugify(title);
-    const data = { ...story, content, title, userId, slug };
+    const timestamp = new Date().getTime();
+    const data = { ...story, content, title, userId, slug, timestamp };
 
     setFormData(data);
     if (data.content.length > MIN_CHAR && data.title.length > MIN_CHAR && data.imageSrc !== "undefined") {
