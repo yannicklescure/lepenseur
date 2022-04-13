@@ -12,7 +12,7 @@ const Settings = () => {
     <Wrapper>
       <div>Settings page</div>
       <div>
-        <NavLink to={`/${user.userName}/edit`}>Edit profile</NavLink>
+        <NavLink to={`/${user.username}/edit`}>Edit profile</NavLink>
       </div>
     </Wrapper>
   );

@@ -11,10 +11,12 @@ export const initialStates = {
   },
   story: {
     _id: null,
+    slug: "",
     title: "",
     content: "",
     userId: null,
     imageSrc: "undefined",
+    visibility: "unlisted",
   },
   user: {
     _id: null,

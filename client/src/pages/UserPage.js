@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Loading from "../components/Loading/Loading";
 import { COLORS } from "../constants";
@@ -7,15 +7,16 @@ import { capitalizeStr } from "../helpers";
 
 const UserPage = () => {
   const params = useParams()
-  const userName = params.username;
+  const username = params.username;
   const [user, setUser] = useState({
     imageSrc: "undefined",
-    userName: "undefined"
+    username: "undefined"
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/users/${userName}`)
+    setLoading(true);
+    fetch(`/api/users/${username}`)
       .then((res) => res.json())
       .then((response) => {
         // console.log(response.data);
@@ -23,7 +24,7 @@ const UserPage = () => {
         setLoading(false);
       });
     // eslint-disable-next-line
-  }, [userName]);
+  }, [username]);
 
   if (loading) return <Loading size="32" />;
 
@@ -33,14 +34,25 @@ const UserPage = () => {
         <Title>{capitalizeStr(user.firstName)} {capitalizeStr(user.lastName)}</Title>
         {
           user.imageSrc !== "undefined" &&
-          <UserImage src={user.imageSrc} alt={user.userName} />
+          <UserImage src={user.imageSrc} alt={user.username} />
         }
       </Container>
       <Spacer />
+      <Wrapper>
+        {
+          user.stories.map(story => (
+            <NavLink key={story._id} to={`/${story.username}/${story.slug}`}>{story.title}</NavLink>
+          ))
+        }
+      </Wrapper>
     </>
   )
 }
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 const Container = styled.div`
   display: flex;
   align-items: center;

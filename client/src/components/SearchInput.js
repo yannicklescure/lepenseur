@@ -17,7 +17,7 @@ const SearchInput = () => {
   };
 
   const handleClick = () => {
-    console.log('handleClick');
+    // console.log('handleClick');
     setClicked(true);
   };
 

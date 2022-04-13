@@ -1,12 +1,34 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { StoryContext } from "../contexts/StoryContext";
 import { UserContext } from "../contexts/UserContext";
+import imageCompression from 'browser-image-compression';
+import Loading from "./Loading/Loading";
+import { MIN_CHAR } from "../constants";
 
-const Picture = () => {
+// code inspired from 
+// https://stackoverflow.com/questions/36580196/reactjs-base64-file-upload
+
+const Picture = ({ from }) => {
   const {
     state: { user },
     actions: { updateUser },
   } = useContext(UserContext);
+
+  const {
+    state: { story },
+    actions: { initialStory, readyToPublish, updateStory },
+  } = useContext(StoryContext);
+
+  const [imageSrc, setImageSrc] = useState(undefined);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let imgSrc = undefined;
+    if (from === 'story') imgSrc = story.imageSrc;
+    if (from === 'user') imgSrc = user.imageSrc;
+    setImageSrc(imgSrc);
+  }, [])
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -22,44 +44,75 @@ const Picture = () => {
   };
 
   const handleFileRead = async (event) => {
-    const file = event.target.files[0];
-    const base64 = await convertBase64(file);
-    // console.log(base64);
-    const userCopy = user;
-    userCopy.imageSrc = base64;
-    updateUser({ user: userCopy });
-    fetch(`/api/users`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userCopy),
-    })
-      // .then((res) => {
-      //   return res.json();
-      // })
-      // .then((data) => {
-      //   console.log(data);
-      // })
-      .catch((error) => {
-        console.log(error);
-      });
+    setLoading(true);
+    setImageSrc(undefined);
+    const imageFile = event.target.files[0];
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    }
+    try {
+      // https://github.com/Donaldcwl/browser-image-compression
+      const compressedFile = await imageCompression(imageFile, options);
+      // console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+      // console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+      const base64 = await convertBase64(compressedFile);
+      // console.log(base64.length);
+      // await uploadToServer(compressedFile); // write your own logic
+      setImageSrc(base64);
+      setLoading(false);
+      if (from === 'story') {
+        const data = story;
+        data.imageSrc = base64;
+        if (data.content.length > MIN_CHAR && data.title.length > MIN_CHAR && data.imageSrc !== "undefined") {
+          readyToPublish({ story: data });
+        }
+        else if (data.content.length > MIN_CHAR || data.title.length > MIN_CHAR) {
+          updateStory({ story: data });
+        }
+        else {
+          initialStory();
+        }
+      }
+      if (from === 'user') {
+        const data = user;
+        data.imageSrc = base64;
+        updateUser({ user: data });
+        fetch(`/api/users`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <>
-      <div>
-        <label htmlFor="avatar">Choose file to upload</label>
+      <Wrapper>
+        <label htmlFor="avatar">Choose picture to upload</label>
         <StyledInput
           type="file"
           id="avatar"
           name="avatar"
-          accept="image/png, image/jpeg"
+          accept="image/png, image/jpeg, image/webp"
           onChange={(ev) => handleFileRead(ev)}
         />
-      </div>
+        {loading && <Loading size="32" />}
+        {imageSrc !== "undefined" && <StyledImg src={imageSrc} />}
+      </Wrapper>
     </>
   )
 }
-
+const Wrapper = styled.div`
+  margin-bottom: 16px;
+`;
 const StyledInput = styled.input`
   font-size: 16px;
   height: 34px;
@@ -67,6 +120,10 @@ const StyledInput = styled.input`
   border: none;
   outline: none;
   box-sizing: border-box;
+  margin-bottom: 16px;
+`;
+const StyledImg = styled.img`
+  width: 100%;
 `;
 
 export default Picture;

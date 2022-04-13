@@ -81,11 +81,11 @@ export const StoryProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    // console.log(localStorage);
-    if (localStorage?.story?._id) {
+    console.log(localStorage);
+    if (localStorage?.title) {
       dispatch({
         hasLoaded: true,
-        story: localStorage.story,
+        story: localStorage,
         message: "data loaded from storage",
         type: "received-story-from-storage",
       });
@@ -94,6 +94,7 @@ export const StoryProvider = ({ children }) => {
   }, []);
 
   const initialStory = () => {
+    setLocalStorage({});
     dispatch({
       type: "initial",
     });
@@ -106,7 +107,7 @@ export const StoryProvider = ({ children }) => {
   };
 
   const updateStory = (data) => {
-    console.log(data);
+    // console.log(data);
     setLocalStorage(data);
     dispatch({
       ...data,
@@ -122,7 +123,7 @@ export const StoryProvider = ({ children }) => {
   };
 
   const readyToPublish = (data) => {
-    console.log(data);
+    // console.log(data);
     setLocalStorage(data);
     dispatch({
       ...data,

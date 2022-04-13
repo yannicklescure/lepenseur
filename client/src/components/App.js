@@ -15,6 +15,7 @@ import Bookmarks from "../pages/Bookmarks";
 import Edit from "../pages/Settings/Edit";
 import Orders from "../pages/Orders";
 import NewStory from "../pages/NewStory";
+import Articles from "../pages/Articles";
 
 function App() {
   const {
@@ -37,7 +38,8 @@ function App() {
             <Route path="/login" element={user._id ? <Navigate to="/" replace /> : <Login />} />
             <Route path="/signup" element={user._id ? <Navigate to="/" replace /> : <Signup />} />
             <Route path="/:username" element={<UserPage />} />
-            <Route path="/:username/edit" element={<Edit />} />
+            <Route path="/:username/edit" element={user._id ? <Edit /> : <Navigate to="/login" replace />} />
+            <Route path="/:username/articles" element={user._id ? <Articles /> : <Navigate to="/login" replace />} />
             <Route path="/:username/:slug" element={<Article />} />
           </Routes>
         </Wrapper>

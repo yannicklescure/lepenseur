@@ -18,12 +18,14 @@ const getUser = async (req, res) => {
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    const result = await db.collection("users").findOne({ userName: req.params.username });
-    console.log(result);
-    const { firstName, lastName, userName, imageSrc } = result;
-    let data = { firstName, lastName, userName, imageSrc };
+    const user = await db.collection("users").findOne({ username: req.params.username });
+    console.log(user);
+    const { firstName, lastName, username, imageSrc } = user;
+    const stories = await db.collection("stories").find({ username, visibility: 'public' }).toArray();
+    console.log(stories);
+    let data = { firstName, lastName, username, imageSrc, stories };
 
-    result
+    user
       ? res.status(200).json({ status: 200, data, message: "success" })
       : res.status(409).json({ status: 409, message: "Item not found" });
   } catch (err) {
@@ -109,7 +111,7 @@ const loginUser = async (req, res) => {
         const {
           firstName,
           lastName,
-          userName,
+          username,
           email,
           _id,
           cart,
@@ -124,7 +126,7 @@ const loginUser = async (req, res) => {
           data: {
             firstName,
             lastName,
-            userName,
+            username,
             email,
             _id,
             cart,
@@ -158,7 +160,7 @@ const createUser = async (req, res) => {
     cart: [],
     bookmarks: [],
     ordersHistory: [],
-    imageSrc: "undefined"
+    imageSrc: "undefined",
   };
   try {
     await client.connect();
@@ -183,7 +185,9 @@ const createUser = async (req, res) => {
     const cryptedPassword = await bcrypt.hash(password, 10);
     userArray.password = cryptedPassword;
     // https://stackoverflow.com/questions/4537227/javascript-replace-special-chars-with-empty-strings
-    userArray.userName = (`${firstName}${lastName}`).toLowerCase().replace(/[^a-zA-Z 0-9]+/g,'');
+    userArray.username = `${firstName}${lastName}`
+      .toLowerCase()
+      .replace(/[^a-zA-Z 0-9]+/g, "");
     const result = await db.collection("users").insertOne(userArray);
     result
       ? res.status(200).json({
@@ -196,7 +200,7 @@ const createUser = async (req, res) => {
             cart: userArray.cart,
             bookmarks: userArray.bookmarks,
             ordersHistory: userArray.ordersHistory,
-            imageSrc: "undefined"
+            imageSrc: "undefined",
           },
           message: "User Created",
         })
@@ -208,13 +212,126 @@ const createUser = async (req, res) => {
   }
 };
 
+const createStory = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, option);
+  const { title, content, userId, imageSrc, visibility, slug, username } = req.body;
+  const newStory = {
+    _id: uuidv4(),
+    slug,
+    title,
+    content,
+    userId,
+    imageSrc,
+    visibility,
+    username
+  };
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    
+    const result = await db.collection("stories").insertOne(newStory);
+    result
+      ? res.status(200).json({
+          status: 200,
+          data: newStory,
+          message: "Story created",
+        })
+      : res.status(409).json({ status: 409, message: "ERROR" });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    client.close();
+  }
+};
+
+const getStory = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    const result = await db.collection("stories").findOne({
+      $and : [
+        { username: req.params.username}, { slug: req.params.slug }
+      ]
+    });
+    // console.log(result);
+    let data = {};
+    if (result) {
+      data = { 
+        title: result.title,
+        content: result.content, 
+        imageSrc: result.imageSrc, 
+        _id: result._id
+      };
+      switch (result.visibility) {
+        case 'unlisted':
+          if (result.visibility === 'unlisted' && req.query._id !== result.userId) {
+            data = {};
+            res.status(404).json({ status: 404, message: "Item not found" });
+          }
+          else {
+            res.status(200).json({ status: 200, data, message: "success" });
+          }
+          break;
+        case 'private':
+          res.status(200).json({ status: 200, data, message: "success" });
+          break;
+        case 'public':
+          res.status(200).json({ status: 200, data, message: "success" });
+          break;
+        default:
+          res.status(409).json({ status: 409, message: "Item not found" });
+      }     
+    }
+    else {
+      res.status(409).json({ status: 409, message: "Item not found" });
+    }
+  } catch (err) {
+    console.log("Error Getting Items", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
+const getStories = async (req, res) => {
+  const { username } = req.params;
+  console.log(req.params);
+  console.log(req.query);
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    const userId = req.query._id;
+    const data = await db.collection("stories").find({ userId }).toArray();
+    if (data.length > 0) {      
+      res.status(200).json({ status: 200, data, message: "success" });
+    }
+    else {
+      res.status(404).json({ status: 404, message: "Item not found" });
+    }
+  } catch (err) {
+    console.log("Error Getting Items", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
 module.exports = {
   getUser,
   getUsers,
   createUser,
   loginUser,
   updateUser,
+  createStory,
+  getStory,
+  getStories,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
-}
+};

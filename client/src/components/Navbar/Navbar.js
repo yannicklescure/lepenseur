@@ -3,28 +3,28 @@ import { FaFeatherAlt } from "react-icons/fa";
 import { COLORS } from "../../constants";
 import { NavLink, useLocation } from "react-router-dom";
 import SearchInput from "../SearchInput";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../../contexts/UserContext";
 import { AiOutlineUser } from "react-icons/ai";
 import Dropdown from "./Dropdown";
 import { FaBookmark, FaRegBookmark, FaPenSquare } from "react-icons/fa";
-import { StoryContext } from "../../contexts/StoryContext";
+import Cookies from 'universal-cookie';
+import Publish from "../buttons/Publish";
 
 const Navbar = () => {
+  // const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
+  const cookies = new Cookies();
+  cookies.set('path', location.pathname, { path: '/' });
+  // console.log(cookies.get('path'));
 
   const [open, setOpen] = useState(false);
-  const [ready, setReady] = useState(false);
-  
-  const {
-    state: { status },
-  } = useContext(StoryContext);
-  
-  useEffect(() => {
-    if (status === "ready-to-publish") setReady(true);
-    else setReady(false);
-  }, [status]);
+   
+  // useEffect(() => {
+  //   const pathname = cookies.get('path');
+  //   console.log(pathname);
+  //   if (pathname) navigate(pathname);
+  // }, []);
   
   const {
     state: { user },
@@ -33,7 +33,7 @@ const Navbar = () => {
   const handleClickUser = () => {
     if (!open) setOpen(true);
     return;
-  }
+  }  
 
   return (
     <Wrapper>
@@ -49,7 +49,9 @@ const Navbar = () => {
               <Container>
                 {
                   location.pathname === '/new-story'
-                    ? (<PublishBtn ready={ready} disabled={ready}>Publish</PublishBtn>)
+                    ? (
+                      <Publish />
+                      )
                     : (
                       <>
                         <NewStory to="/new-story">
@@ -79,7 +81,7 @@ const Navbar = () => {
                         >
                           <UserImage
                             src={user.imageSrc}
-                            alt={user.userName}
+                            alt={user.username}
                             open={open}
                           />
                         </StyledImageBtn>
@@ -126,7 +128,7 @@ const NavbarDiv = styled.div`
 const Container = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 `;
 const Logo = styled.div`
 `;
@@ -168,6 +170,9 @@ const SignupLink = styled(StyledLink)`
   }
 `;
 const StyledImageBtn = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   outline: none;
@@ -190,13 +195,7 @@ const StyledIconBtn = styled.button`
   cursor: pointer;
 `;
 const StyledIconMenu = styled.div`
-  position: relative;
-  display: inline-block;
-
-  /* &:hover ${StyledIconBtn} {
-    color: ${COLORS.grey};
-    border: 1px solid ${COLORS.grey};
-  } */
+  position: relative;  
 `;
 const UserImage = styled.img`
   width: 35px;
@@ -223,16 +222,6 @@ const NavItem = styled(NavLink)`
 `;
 const NewStory = styled(NavItem)`
   font-size: 20px;
-`;
-const PublishBtn = styled.button`
-  border: none;
-  outline: none;
-  background-color: ${({ready}) => ready ? 'rgba(50, 135, 82, 1)' : 'rgba(50, 135, 82, 80%)'};
-  padding: 8px 12px;
-  color: ${COLORS.light};
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: ${({ready}) => ready ? 'pointer' : 'not-allowed'};
 `;
 
 export default Navbar;

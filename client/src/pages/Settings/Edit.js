@@ -10,7 +10,7 @@ const Edit = () => {
 
   return (
     <>
-      <Picture />
+      <Picture from="user" />
     </>
   )
 }

@@ -58,10 +58,13 @@ const Dropdown = ({ open, setOpen }) => {
       <StyledIconSubMenu open={open}>
         <CurrentUser>
           <div>Signed in as</div>
-          <div>{user.userName}</div>
+          <div>{user.username}</div>
         </CurrentUser>
-        <StyledIconItem to={`/${user.userName}`}>
+        <StyledIconItem to={`/${user.username}`}>
           <div>Your profile</div>
+        </StyledIconItem>
+        <StyledIconItem to={`/${user.username}/articles`}>
+          <div>Your articles</div>
         </StyledIconItem>
         <StyledIconItem to="/orders-history">
           <div>Your orders</div>
