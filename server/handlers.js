@@ -258,26 +258,26 @@ const updateStory = async (req, res) => {
     console.log(story);
 
     if (story) {
-      // const updatedStory = {};
-      // if (story.slug !== slug) updatedStory.slug = slug;
-      // if (story.title !== title) updatedStory.title = title;
-      // if (story.content !== content) updatedStory.content = content;
-      // if (story.userId !== userId) updatedStory.userId = userId;
-      // if (story.imageSrc !== imageSrc) updatedStory.imageSrc = imageSrc;
-      // if (story.visibility !== visibility) updatedStory.visibility = visibility;
-      // if (story.username !== username) updatedStory.username = username;
-      // updatedStory.updatedAt = new Date().getTime();
-      const updatedStory = {
-        ...story,
-        title, 
-        content, 
-        userId, 
-        imageSrc, 
-        visibility, 
-        slug, 
-        username,
-        updatedAt: new Date().getTime()
-      };
+      // const updatedStory = {
+      //   ...story,
+      //   title, 
+      //   content, 
+      //   user,
+      //   imageSrc, 
+      //   visibility, 
+      //   slug, 
+      //   updatedAt: new Date().getTime()
+      // };
+      // Rather than sending the full object, I just send the updated data.
+      const updatedStory = {};
+      if (story.slug !== slug) updatedStory.slug = slug;
+      if (story.title !== title) updatedStory.title = title;
+      if (story.content !== content) updatedStory.content = content;
+      if (story.userId !== userId) updatedStory.userId = userId;
+      if (story.imageSrc !== imageSrc) updatedStory.imageSrc = imageSrc;
+      if (story.visibility !== visibility) updatedStory.visibility = visibility;
+      if (story.username !== username) updatedStory.username = username;
+      updatedStory.updatedAt = new Date().getTime();
       console.log(updatedStory);
 
       const result = await db.collection("stories").updateOne(
@@ -317,7 +317,7 @@ const getStory = async (req, res) => {
     const db = client.db(DB_NAME);
     const result = await db.collection("stories").findOne({
       $and : [
-        { username: req.params.username}, { slug: req.params.slug }
+        { username: req.params.username }, { slug: req.params.slug }
       ]
     });
     // console.log(result);

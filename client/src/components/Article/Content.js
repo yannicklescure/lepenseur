@@ -21,6 +21,9 @@ const Markdown = styled(ReactMarkdown)`
   & h4 { font-size: 1em; }
   & h5 { font-size: 0.8em; }
   & h6 { font-size: 0.7em; }
+  & h1, h2, h3, h4, h5, h6 {
+    margin: 16px 0;
+  }
   & p {
     margin-bottom: 16px;
   }
@@ -29,9 +32,19 @@ const Markdown = styled(ReactMarkdown)`
     background-color: ${COLORS.code};
     margin-bottom: 16px;
     border-radius: 4px;
+    /*
+      https://stackoverflow.com/questions/248011/how-do-i-wrap-text-in-a-pre-tag
+      https://css-tricks.com/snippets/css/make-pre-text-wrap/
+    */
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
   }
   & code {
     font-family: 'Courier New', Courier, monospace;
+    overflow-wrap: break-word;
   }
 `;
 

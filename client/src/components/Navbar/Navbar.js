@@ -5,13 +5,13 @@ import { NavLink, useLocation } from "react-router-dom";
 import SearchInput from "../SearchInput";
 import { useContext, useState } from "react";
 import { UserContext } from "../../contexts/UserContext";
-import { AiOutlineUser } from "react-icons/ai";
 import Dropdown from "./Dropdown";
 import { FaBookmark, FaRegBookmark, FaPenSquare } from "react-icons/fa";
 import Cookies from 'universal-cookie';
 import PublishStory from "../buttons/PublishStory";
 import { StoryContext } from "../../contexts/StoryContext";
 import UpdateStory from "../buttons/UpdateStory";
+import Avatar from "../Avatar";
 
 const Navbar = () => {
   // const navigate = useNavigate();
@@ -72,30 +72,12 @@ const Navbar = () => {
                     )
                 }
                 <StyledIconMenu>                  
-                    {
-                      user.imageSrc === "undefined"
-                      ? (
-                        <StyledIconBtn
-                          onClick={handleClickUser}
-                          open={open}
-                        >
-                          <AiOutlineUser size="25" />
-                        </StyledIconBtn>
-                      )
-                      : (
-                        <StyledImageBtn
-                          onClick={handleClickUser}
-                          open={open}
-                        >
-                          <UserImage
-                            src={user.imageSrc}
-                            alt={user.username}
-                            open={open}
-                          />
-                        </StyledImageBtn>
-                      )
-                    }
-                  
+                  <StyledIconBtn
+                    onClick={handleClickUser}
+                    open={open}
+                  >
+                    <Avatar user={user} open={open} />
+                  </StyledIconBtn>
                   <Dropdown
                     open={open}
                     setOpen={setOpen}
@@ -184,40 +166,13 @@ const StyledImageBtn = styled.button`
   background: none;
   border: none;
   outline: none;
-  border-radius: 50%;
   padding: 0;
   cursor: pointer;
 `;
-const StyledIconBtn = styled.button`
-  background: none;
-  border: none;
-  outline: none;
-  color: ${({open}) => open ? COLORS.grey : COLORS.dark};
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border: 1px solid ${({open}) => open ? COLORS.grey : COLORS.dark};
-  border-radius: 50%;
-  cursor: pointer;
+const StyledIconBtn = styled(StyledImageBtn)`  
 `;
 const StyledIconMenu = styled.div`
   position: relative;  
-`;
-const UserImage = styled.img`
-  width: 35px;
-  height: 35px;
-  object-fit: cover;
-  border-radius: 50%;
-  ${({open}) => open ? `
-    filter: gray; /* IE6-9 */
-    -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
-    filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
-  ` : `
-    -webkit-filter: grayscale(0);
-    filter: none;
-  `};
 `;
 const NavItem = styled(NavLink)`
   color: ${COLORS.dark};

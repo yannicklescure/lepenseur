@@ -1,15 +1,16 @@
 import styled from "styled-components";
 import { COLORS } from "../../constants";
 import { capitalizeStr, readingTime, shortWrittenDate } from "../../helpers";
-import { FaCircle } from "react-icons/fa";
+import { FaCircle, FaFacebook, FaTwitter, FaLinkedin, FaShare } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import Avatar from "../Avatar";
 
 const Head = ({ user, article }) => {
   return (
     <Wrapper>
       <Container>
         <NavLink to={`/${article.user.username}`}>
-          <UserImage src={article.user.imageSrc} alt={user.username} />
+          <Avatar user={article.user} size="48" />          
         </NavLink>
         <StyledDiv>
           <StyledName to={`/${article.user.username}`}>
@@ -27,7 +28,14 @@ const Head = ({ user, article }) => {
       {
         user._id === article.user._id
         ? <EditLink to={`/${user.username}/${article.slug}/edit`}>edit</EditLink>
-        : <div>TOTO</div>
+        : (
+          <ShareLinks>
+            <FaTwitter />
+            <FaFacebook />
+            <FaLinkedin />
+            <FaShare />
+          </ShareLinks>
+        )
       }      
     </Wrapper>
   )
@@ -63,12 +71,6 @@ const StyledInfo = styled(Container)`
   color: ${COLORS.secondary};
   font-size: 14px;
 `;
-const UserImage = styled.img`
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 50%;
-`;
 const StyledDate = styled.div`
   color: ${COLORS.secondary};
 `;
@@ -76,5 +78,11 @@ const Circle = styled.div`
   font-size: 4px;
 `;
 const EditLink = styled(NavLink)``;
+const ShareLinks = styled.div`
+  display: flex;
+  font-size: 18px;
+  gap: 16px;
+  color: ${COLORS.dark};
+`;
 
 export default Head;
