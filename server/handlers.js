@@ -229,9 +229,9 @@ const createStory = async (req, res) => {
     await client.connect();
     const db = client.db(DB_NAME);
     
-    const result = await db.collection("stories").insertOne(newStory);
     newStory.createdAt = new Date().getTime();
     newStory.updatedAt = new Date().getTime();
+    const result = await db.collection("stories").insertOne(newStory);
 
     result
       ? res.status(200).json({

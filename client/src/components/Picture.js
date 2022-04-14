@@ -16,7 +16,7 @@ const Picture = ({ from, article = undefined }) => {
   } = useContext(UserContext);
 
   const {
-    state: { story },
+    state: { status, story },
     actions: { initialStory, readyToPublish, updateStory, readyToUpdate },
   } = useContext(StoryContext);
 
@@ -109,6 +109,7 @@ const Picture = ({ from, article = undefined }) => {
           name="avatar"
           accept="image/png, image/jpeg, image/webp"
           onChange={(ev) => handleFileRead(ev)}
+          disabled={status === "sending-story-to-server"}
         />
         {loading && <Loading size="32" />}
         {imageSrc !== "undefined" && <StyledImg src={imageSrc} />}

@@ -69,6 +69,13 @@ const reducer = (state, action) => {
         status: "ready-to-publish",
       };
     }
+    case "sending-story-to-server": {
+      return {
+        ...state,
+        ...action,
+        status: "sending-story-to-server",
+      };
+    }
     case "ready-to-update": {
       return {
         ...state,
@@ -110,6 +117,12 @@ export const StoryProvider = ({ children }) => {
   const loadingStory = () => {
     dispatch({
       type: "loading-story-from-server",
+    });
+  };
+
+  const sendingStoryToServer = () => {
+    dispatch({
+      type: "sending-story-to-server",
     });
   };
 
@@ -176,6 +189,7 @@ export const StoryProvider = ({ children }) => {
           readyToPublish,
           initialStory,
           readyToUpdate,
+          sendingStoryToServer,
         },
       }}
     >

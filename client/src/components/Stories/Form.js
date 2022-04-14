@@ -14,7 +14,7 @@ const Form = ({ from = undefined, article = undefined }) => {
   const [loading, setLoading] = useState(true);
 
   const {
-    state: { story },
+    state: { status, story },
     actions: { initialStory, readyToPublish, updateStory, readyToUpdate },
   } = useContext(StoryContext);
   
@@ -88,6 +88,7 @@ const Form = ({ from = undefined, article = undefined }) => {
           placeholder="Title" 
           onChange={(ev) => handleChange('title', ev.target.value)}
           required
+          disabled={status === "sending-story-to-server"}
         />
         <Text
           ref={textarea}
@@ -98,6 +99,7 @@ const Form = ({ from = undefined, article = undefined }) => {
           onChange={(ev) => handleChange('content', ev.target.value)}
           scrollHeight={scrollHeight}
           required
+          disabled={status === "sending-story-to-server"}
         />
       </Wrapper>
     </>

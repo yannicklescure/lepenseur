@@ -4,7 +4,7 @@ import Form from "../components/Stories/Form";
 const NewStory = () => {
   return (
     <>
-      <Form />
+      <Form from="story" />
       <Picture from="story" />
     </>
   )

@@ -24,6 +24,8 @@ const Title = styled.h1`
   margin: 24px 0;
   line-height: 1.6;
 `;
-const StyledImg = styled.img``;
+const StyledImg = styled.img`
+  margin-bottom: 48px;
+`;
 
 export default Article;

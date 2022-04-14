@@ -11,7 +11,7 @@ const Publish = () => {
   
   const {
     state: { status, story },
-    actions: { initialStory }
+    actions: { initialStory, sendingStoryToServer }
   } = useContext(StoryContext);
 
   const {
@@ -25,6 +25,8 @@ const Publish = () => {
 
   const handlePublishStory = () => {
     console.log(story);
+    setReady(false);
+    sendingStoryToServer();
     fetch(`/api/stories`, {
       method: "POST",
       headers: {
