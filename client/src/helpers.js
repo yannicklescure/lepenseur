@@ -43,3 +43,11 @@ export const readingTime = (text) => {
   const wordsPerMinute = 200;
   return Math.ceil(words / wordsPerMinute);
 };
+
+export const makeTextIntro = (text) => {
+  const arr = text.split(/\n/).filter(el => !(new RegExp('[#`]').test(el)) && el.length > 0);
+  let result = arr[0];
+  if (result.split(' ').length > 50) result = result.split(' ').slice(0, 50).join(' ') + '...';
+  // console.log(result);
+  return result;
+}

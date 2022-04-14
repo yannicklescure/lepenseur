@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import Article from "../components/cards/Article";
 import Loading from "../components/Loading/Loading";
 import { COLORS } from "../constants";
+import { UserContext } from "../contexts/UserContext";
 import { capitalizeStr } from "../helpers";
 
 const UserPage = () => {
-  const params = useParams()
-  const username = params.username;
-  const [user, setUser] = useState({
+  const params = useParams();
+  
+  const {
+    state: { user },
+  } = useContext(UserContext);
+
+  const [userPage, setUserPage] = useState({
     imageSrc: "undefined",
     username: "undefined"
   });
@@ -16,32 +22,29 @@ const UserPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/users/${username}`)
+    fetch(`/api/users/${params.username}`)
       .then((res) => res.json())
       .then((response) => {
         // console.log(response.data);
-        setUser(response.data);
+        setUserPage(response.data);
         setLoading(false);
       });
     // eslint-disable-next-line
-  }, [username]);
+  }, [params]);
 
   if (loading) return <Loading size="32" />;
 
   return (
     <>
       <Container>
-        <Title>{capitalizeStr(user.firstName)} {capitalizeStr(user.lastName)}</Title>
-        {
-          user.imageSrc !== "undefined" &&
-          <UserImage src={user.imageSrc} alt={user.username} />
-        }
+        <Title>{capitalizeStr(userPage.firstName)} {capitalizeStr(userPage.lastName)}</Title>
+        { userPage.username !== user.username && <div>Follow</div> }
       </Container>
       <Spacer />
       <Wrapper>
         {
-          user.stories.map(story => (
-            <NavLink key={story._id} to={`/${story.username}/${story.slug}`}>{story.title}</NavLink>
+          userPage.stories.map(story => (
+            <Article key={story._id} article={story} />
           ))
         }
       </Wrapper>

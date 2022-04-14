@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import Articles from "../components/cards/Articles";
+import Article from "../components/cards/Article";
 import Loading from "../components/Loading";
 import { UserContext } from "../contexts/UserContext";
 
@@ -41,7 +41,7 @@ const ArticlesPage = () => {
             <Wrapper>
               {
                 articles.map(article => (
-                  <Articles article={article} />
+                  <Article key={article._id} article={article} />
                 ))
               }
             </Wrapper>
