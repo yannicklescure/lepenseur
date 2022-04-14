@@ -46,6 +46,24 @@ const Markdown = styled(ReactMarkdown)`
     font-family: 'Courier New', Courier, monospace;
     overflow-wrap: break-word;
   }
+  & ul { 
+    list-style-type: disc;
+    list-style-position: inside;
+    list-style-image: none;
+    padding: 0;
+    & li {
+      margin-bottom: 8px;
+    }
+  }
+  & ol {
+    list-style-type: decimal; 
+    list-style-position: inside;
+    list-style-image: none;
+    padding: 0;
+    & li {
+      margin-bottom: 16px;
+    }
+  }
 `;
 
 export default Content;

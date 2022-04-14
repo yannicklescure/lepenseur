@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import styled from "styled-components";
+import Articles from "../components/cards/Articles";
 import Loading from "../components/Loading";
 import { UserContext } from "../contexts/UserContext";
 
-const Articles = () => {
+const ArticlesPage = () => {
   const params = useParams();
   // console.log(params);
   const { username } = params;
@@ -40,7 +41,7 @@ const Articles = () => {
             <Wrapper>
               {
                 articles.map(article => (
-                  <NavLink key={article._id} to={`/${article.username}/${article.slug}`}>{article.title}</NavLink>
+                  <Articles article={article} />
                 ))
               }
             </Wrapper>
@@ -55,4 +56,4 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-export default Articles;
+export default ArticlesPage;

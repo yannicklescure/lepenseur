@@ -4,10 +4,12 @@ import { useContext, useEffect, useState } from "react";
 import { StoryContext } from "../../contexts/StoryContext";
 import { UserContext } from "../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import Loading from "../Loading";
 
 const Publish = () => {
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(false);
   
   const {
     state: { status, story },
@@ -27,6 +29,7 @@ const Publish = () => {
     console.log(story);
     setReady(false);
     sendingStoryToServer();
+    setLoading(true);
     fetch(`/api/stories`, {
       method: "POST",
       headers: {
@@ -61,7 +64,13 @@ const Publish = () => {
       ready={ready}
       disabled={!ready}
       onClick={handlePublishStory}
-    >Publish</PublishBtn>
+    >
+      {
+        loading 
+        ? <Loading size="16" />
+        : <>Publish</>
+      }
+    </PublishBtn>
   )
 }
 
@@ -69,11 +78,13 @@ const PublishBtn = styled.button`
   border: none;
   outline: none;
   background-color: ${({ready}) => ready ? 'RGB(18, 111, 252)' : 'RGBA(18, 111, 252, 80%)'};
-  padding: 8px 18px;
+  padding: 8px 20px;
   color: ${({ready}) => ready ? COLORS.light : COLORS.grey};
   font-size: 16px;
   border-radius: 18px;
   cursor: ${({ready}) => ready ? 'pointer' : 'not-allowed'};
+  width: 90px;
+  height: 36px;
 `;
 
 export default Publish;

@@ -249,7 +249,7 @@ const createStory = async (req, res) => {
 
 const updateStory = async (req, res) => {
   const client = new MongoClient(MONGO_URI, option);
-  const { _id, title, content, userId, imageSrc, visibility, slug, username } = req.body;
+  const { _id, title, content, user, imageSrc, visibility, slug } = req.body;
   try {
     await client.connect();
     const db = client.db(DB_NAME);
@@ -273,10 +273,10 @@ const updateStory = async (req, res) => {
       if (story.slug !== slug) updatedStory.slug = slug;
       if (story.title !== title) updatedStory.title = title;
       if (story.content !== content) updatedStory.content = content;
-      if (story.userId !== userId) updatedStory.userId = userId;
+      if (story.userId !== user._id) updatedStory.userId = user._id;
       if (story.imageSrc !== imageSrc) updatedStory.imageSrc = imageSrc;
       if (story.visibility !== visibility) updatedStory.visibility = visibility;
-      if (story.username !== username) updatedStory.username = username;
+      if (story.username !== user.username) updatedStory.username = user.username;
       updatedStory.updatedAt = new Date().getTime();
       console.log(updatedStory);
 
@@ -320,7 +320,7 @@ const getStory = async (req, res) => {
         { username: req.params.username }, { slug: req.params.slug }
       ]
     });
-    // console.log(result);
+    console.log(result);
     let data = {};
     if (result) {
       const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username } = result;

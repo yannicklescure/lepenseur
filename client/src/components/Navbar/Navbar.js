@@ -58,7 +58,7 @@ const Navbar = () => {
                     ? (
                       <PublishStory />
                       )
-                    : status === "ready-to-update"
+                    : status === "ready-to-update" || status === "sending-story-to-server"
                     ? <UpdateStory />
                     : (
                       <>

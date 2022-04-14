@@ -27,7 +27,7 @@ const Head = ({ user, article }) => {
       </Container>
       {
         user._id === article.user._id
-        ? <EditLink to={`/${user.username}/${article.slug}/edit`}>edit</EditLink>
+        ? <EditLink to={`/${user.username}/${article.slug}/edit`}>Edit</EditLink>
         : (
           <ShareLinks>
             <FaTwitter />
@@ -77,7 +77,19 @@ const StyledDate = styled.div`
 const Circle = styled.div`
   font-size: 4px;
 `;
-const EditLink = styled(NavLink)``;
+const EditLink = styled(NavLink)`
+  text-decoration: none;
+  background-color: rgba(251, 195, 65, 80%);
+  color: rgba(33, 36, 42, 80%);
+  padding: 8px 20px;
+  border-radius: 18px;
+  font-size: 16px;
+
+  &:hover {
+    color: ${COLORS.dark};
+    background-color: rgba(251, 195, 65, 100%);
+  }
+`;
 const ShareLinks = styled.div`
   display: flex;
   font-size: 18px;
