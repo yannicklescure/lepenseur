@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Article from "../components/cards/Article";
 import Loading from "../components/Loading";
 import { COLORS } from "../constants";
@@ -14,9 +14,10 @@ const ArticlesPage = () => {
 
   const [data, setData] = useState([]);
   const [articles, setArticles] = useState([]);
-  const [labels, setLabels] = useState(["All"]);
+  const [labels, setLabels] = useState(["all", "public", "private", "unlisted"]);
   const [selected, setSelected] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [labelHover, setLabelHover] = useState(false);
   
   const {
     state: { user },
@@ -33,20 +34,23 @@ const ArticlesPage = () => {
           setData(response.data);
           setArticles(response.data);
           setLoading(false);
-          const arr = labels;
+          const arr = ["all"];
           response.data.forEach(item => {
-            // console.log(arr);
-            // console.log(item.visibility);
             if (!arr.includes(item.visibility)) arr.push(item.visibility);
           });
-          setLabels(arr.sort());
+          const copy = labels;
+          labels.forEach((label, index) => {
+            if (!arr.includes(label)) copy.splice(index, 1, null);
+          });
+          // console.log(copy);
+          setLabels(copy.filter(el => el !== null));
         });
     }
     // eslint-disable-next-line
   }, [user]);
 
   const handleClick = (label) => {
-    if (label === "All") setArticles(data);
+    if (label === "all") setArticles(data);
     else setArticles(data.filter(item => item.visibility === label));
     setSelected(label);
   }
@@ -58,11 +62,22 @@ const ArticlesPage = () => {
       <Labels>
         {
           labels.map(label => (
-            <LabelBtn 
-              key={label} 
-              onClick={() => handleClick(label)}
-              selected={selected === label}
-            >{capitalizeStr(label)}</LabelBtn>
+            <LabelDiv 
+              key={label}
+              onMouseEnter={() => selected === label ? setLabelHover(true) : null}
+              onMouseLeave={() => selected === label ? setLabelHover(false) : null}
+              // onMouseOver={() => selected === label ? setLabelHover(!labelHover) : null}
+              labelHover={labelHover}
+            >
+              <LabelBtn 
+                onClick={() => handleClick(label)}
+                selected={selected === label}
+              >{capitalizeStr(label)}</LabelBtn>
+              <BorderBottom 
+                selected={selected === label}
+                labelHover={labelHover}
+              />
+            </LabelDiv>
           ))
         }
       </Labels>
@@ -84,9 +99,19 @@ const Wrapper = styled.div`
 const Labels = styled.div`
   display: flex;
   gap: 12px;
-  padding-bottom: 16px;
   margin-bottom: 16px;
-  border-bottom: 1px solid ${COLORS.dark};
+  border-bottom: 1px solid ${COLORS.secondary};
+`;
+const LabelDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: ${COLORS.dark};
+
+  &:hover {
+    color: ${COLORS.primary};
+  }
 `;
 const LabelBtn = styled.button`
   font-size: 16px;
@@ -95,11 +120,36 @@ const LabelBtn = styled.button`
   outline: none;
   border: none;
   padding: 0;
-  font-weight: ${({selected}) => selected ? 'bold' : 'normal'};
-
-  &:hover {
-    color: ${COLORS.primary};
+  padding-bottom: ${({selected}) => selected ? '16px' : '16px'};
+  color: inherit;
+`;
+const slideIn = keyframes`
+  from {
+    width: 0%;
+    background-color: ${COLORS.primary};
   }
+
+  to {
+    width: 100%;
+    background-color: ${COLORS.dark};
+  }
+`;
+const slideOut = keyframes`
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
+`;
+const BorderBottom = styled.div`
+  width: ${({selected}) => selected ? '100%' : '0%'};
+  height: 3px;
+  background-color: ${({labelHover}) => labelHover ? COLORS.primary : COLORS.dark};
+  margin-bottom: -2px;
+  animation: ${({selected}) => selected ? slideIn : slideOut} 300ms ease;
+  transform: translateX(0%);
 `;
 
 export default ArticlesPage;

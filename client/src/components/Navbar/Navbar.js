@@ -21,7 +21,7 @@ const Navbar = () => {
   // console.log(cookies.get('path'));
 
   const [open, setOpen] = useState(false);
-   
+
   // useEffect(() => {
   //   const pathname = cookies.get('path');
   //   console.log(pathname);
@@ -38,7 +38,7 @@ const Navbar = () => {
   } = useContext(StoryContext);
 
   useEffect(() => {
-    console.log(location);
+    // console.log(location);
     if (location.pathname !== '/new-story') initialStory();
   }, [location]);
     
@@ -109,7 +109,7 @@ const Navbar = () => {
 
 const Wrapper = styled.div`
   background-color: ${COLORS.white};
-  border-bottom: 1px solid ${COLORS.black};
+  border-bottom: 1px solid ${COLORS.dark};
   position: fixed;
   width: 100%;
 `;
