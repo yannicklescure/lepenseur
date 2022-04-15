@@ -1,11 +1,13 @@
 import Picture from "../components/Picture";
 import Form from "../components/Stories/Form";
+import Select from "../components/Stories/Select";
 
 const NewStory = () => {
   return (
     <>
-      <Form from="story" />
+      <Select from="story" />
       <Picture from="story" />
+      <Form from="story" />
     </>
   )
 }

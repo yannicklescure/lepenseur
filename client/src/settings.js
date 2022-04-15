@@ -16,7 +16,7 @@ export const initialStates = {
     content: "",
     userId: null,
     imageSrc: "undefined",
-    visibility: "unlisted",
+    visibility: "public",
     createdAt: "0", 
     updatedAt: "0",
   },

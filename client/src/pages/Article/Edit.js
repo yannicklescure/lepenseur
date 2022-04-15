@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Loading from "../../components/Loading";
-import Article from "../../components/Article";
 import { UserContext } from "../../contexts/UserContext";
 import NotFound from "../NotFound";
 import Form from "../../components/Stories/Form";
 import Picture from "../../components/Picture";
+import Select from "../../components/Stories/Select";
 
 const ArticleEdit = () => {
   const params = useParams();
@@ -25,14 +25,14 @@ const ArticleEdit = () => {
     let unmounted = false;
     let fetchUrl = `/api/stories/${username}/${slug}`;
     if (user._id) fetchUrl += `?_id=${user._id}`;
-    console.log(fetchUrl);
+    // console.log(fetchUrl);
     fetch(fetchUrl)
       .then((res) => {
         if (!unmounted) return res.json();
       })
       .then((response) => {
         if (!unmounted) {
-          console.log(response);
+          // console.log(response);
           const status = {
             404: () => {
               setVisibility('not-found');
@@ -58,8 +58,9 @@ const ArticleEdit = () => {
 
   return (
     <>
-      <Form from="editStory" article={article} />
+      <Select from="editStory" article={article} />
       <Picture from="editStory" article={article} />
+      <Form from="editStory" article={article} />
     </>
   )
 }

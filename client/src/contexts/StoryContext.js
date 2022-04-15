@@ -95,7 +95,7 @@ export const StoryProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    console.log(localStorage);
+    // console.log(localStorage);
     if (localStorage?.title) {
       dispatch({
         hasLoaded: true,
@@ -161,7 +161,7 @@ export const StoryProvider = ({ children }) => {
   };
 
   const receivedStoryFromServer = (data) => {
-    console.log(data);
+    // console.log(data);
     setLocalStorage(data);
     dispatch({
       ...data,

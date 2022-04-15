@@ -26,7 +26,7 @@ const UpdateStory = () => {
   }, [status]);
 
   const handleUpdateStory = () => {
-    console.log(story);
+    // console.log(story);
     setReady(false);
     sendingStoryToServer();
     setLoading(true);
@@ -39,7 +39,7 @@ const UpdateStory = () => {
     })
       .then((res) => res.json())
       .then((json) => {
-        console.log(json);
+        // console.log(json);
         if (json.status === 200) {
           initialStory();
           // receivedUserFromServer({ user: json.data });

@@ -33,7 +33,6 @@ const Form = ({ from = undefined, article = undefined }) => {
       const slug = slugify(title);
       const timestamp = new Date().getTime();
       data = { ...story, content, title, userId, slug, timestamp };
-  
     }
     setFormData(data);
     setLoading(false);
@@ -112,13 +111,16 @@ const Wrapper = styled.form`
   gap: 16px;
   margin-bottom: 16px;
 `;
-const Title = styled.input``;
+const Title = styled.input`
+  border: 1px solid ${COLORS.grey};
+  background-color: ${COLORS.light};
+`;
 const Text = styled.textarea`
   font-size: 16px;
   height: 34px;
   border-radius: 4px;
   padding: 8px 12px;
-  border: 1px solid ${COLORS.secondary};
+  border: 1px solid ${COLORS.grey};
   outline: none;
   line-height: 1.6;
   min-height: ${TEXTAREA_HEIGHT}px;
@@ -126,6 +128,7 @@ const Text = styled.textarea`
   height: ${({ scrollHeight }) => scrollHeight}px;
   overflow: hidden;
   box-sizing: border-box;
+  background-color: ${COLORS.light};
 `;
 
 export default Form;

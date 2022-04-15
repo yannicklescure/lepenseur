@@ -23,14 +23,14 @@ const ArticlePage = () => {
     let unmounted = false;
     let fetchUrl = `/api/stories/${username}/${slug}`;
     if (user._id) fetchUrl += `?_id=${user._id}`;
-    console.log(fetchUrl);
+    // console.log(fetchUrl);
     fetch(fetchUrl)
       .then((res) => {
         if (!unmounted) return res.json();
       })
       .then((response) => {
         if (!unmounted) {
-          console.log(response);
+          // console.log(response);
           const status = {
             404: () => {
               setVisibility('not-found');
