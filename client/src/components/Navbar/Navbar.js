@@ -3,7 +3,7 @@ import { FaFeatherAlt } from "react-icons/fa";
 import { COLORS } from "../../constants";
 import { NavLink, useLocation } from "react-router-dom";
 import SearchInput from "../SearchInput";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext";
 import Dropdown from "./Dropdown";
 import { FaBookmark, FaRegBookmark, FaPenSquare } from "react-icons/fa";
@@ -34,7 +34,13 @@ const Navbar = () => {
 
   const {
     state: { status },
+    actions: { initialStory }
   } = useContext(StoryContext);
+
+  useEffect(() => {
+    console.log(location);
+    if (location.pathname !== '/new-story') initialStory();
+  }, [location]);
     
   const handleClickUser = () => {
     if (!open) setOpen(true);
