@@ -1,12 +1,11 @@
 import styled from "styled-components";
-import { FaFeatherAlt } from "react-icons/fa";
 import { COLORS } from "../../constants";
 import { NavLink, useLocation } from "react-router-dom";
 import SearchInput from "../SearchInput";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext";
 import Dropdown from "./Dropdown";
-import { FaBookmark, FaRegBookmark, FaPenSquare } from "react-icons/fa";
+import { FaBookmark, FaRegBookmark, FaFeatherAlt, FaRegFileAlt, FaRegBell, FaBell } from "react-icons/fa";
 import Cookies from 'universal-cookie';
 import PublishStory from "../buttons/PublishStory";
 import { StoryContext } from "../../contexts/StoryContext";
@@ -68,11 +67,14 @@ const Navbar = () => {
                     ? <UpdateStory />
                     : (
                       <>
-                        <NewStory to="/new-story">
-                          <FaPenSquare />
-                        </NewStory>
+                        <NavItem to="/">
+                          { user.bookmarks.length === 0 ? <FaBell /> : <FaRegBell /> }
+                        </NavItem>
                         <NavItem to="/bookmarks">
-                          { user.bookmarks.length === 0 ? <FaRegBookmark /> : <FaBookmark /> }
+                          { user.bookmarks.length === 0 ? <FaBookmark /> : <FaRegBookmark /> }
+                        </NavItem>
+                        <NavItem to="/new-story">
+                          <FaRegFileAlt />
                         </NavItem>
                       </>
                     )
