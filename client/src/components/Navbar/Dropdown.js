@@ -61,19 +61,19 @@ const Dropdown = ({ open, setOpen }) => {
           <div>{user.username}</div>
         </CurrentUser>
         <StyledIconItem to={`/${user.username}`}>
-          <div>Your profile</div>
+          <div>Profile page</div>
         </StyledIconItem>
         <StyledIconItem to={`/${user.username}/articles`}>
-          <div>Your articles</div>
+          <div>Articles</div>
         </StyledIconItem>
         <StyledIconItem to="/orders-history">
-          <div>Your orders</div>
+          <div>Orders</div>
         </StyledIconItem>
         <StyledIconItem to="/bookmarks">
-          <div>Your bookmarks</div>
+          <div>Bookmarks</div>
         </StyledIconItem>
         <StyledIconItem to="/settings">
-          <div>Settings</div>
+          <div>Account</div>
         </StyledIconItem>
         <Logout onClick={handleLogout}>
           <div>Sign out</div>

@@ -15,7 +15,7 @@ const ArticlesPage = () => {
   const [data, setData] = useState([]);
   const [articles, setArticles] = useState([]);
   const [labels, setLabels] = useState(["all", "public", "private", "unlisted"]);
-  const [selected, setSelected] = useState("All");
+  const [selected, setSelected] = useState("all");
   const [loading, setLoading] = useState(true);
   const [labelHover, setLabelHover] = useState(false);
   
@@ -31,11 +31,12 @@ const ArticlesPage = () => {
         .then((res) => res.json())
         .then((response) => {
           // console.log(response.data);
-          setData(response.data);
-          setArticles(response.data);
+          const items = response.data.sort((a,b) => b.createdAt - a.createdAt);
+          setData(items);
+          setArticles(items);
           setLoading(false);
           const arr = ["all"];
-          response.data.forEach(item => {
+          items.forEach(item => {
             if (!arr.includes(item.visibility)) arr.push(item.visibility);
           });
           const copy = labels;
