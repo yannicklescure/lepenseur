@@ -33,5 +33,5 @@ export const COLORS = {
 // For styled-components
 // ${COLORS.danger}
 
-export const MIN_CHAR = 3;
+export const MIN_CHAR = 2;
 export const TEXTAREA_HEIGHT = 300;

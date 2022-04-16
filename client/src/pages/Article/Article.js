@@ -13,11 +13,31 @@ const ArticlePage = () => {
   const [visibility, setVisibility] = useState(undefined);
   const [article, setArticle] = useState({});
   const [loading, setLoading] = useState(true);
-  
+
   const {
     state: { user },
   } = useContext(UserContext);
   // console.log(user);
+
+  useEffect(() => {
+    if (username && slug) {
+      fetch(`/api/views`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, slug }),
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          // console.log(json);
+        })
+        .catch((err) => {
+          console.error(err);
+          // errorFromServerUser({ message: "An unknown error has occurred" });
+        });
+    }
+  }, []);
 
   useEffect(() => {
     let unmounted = false;
@@ -33,30 +53,28 @@ const ArticlePage = () => {
           // console.log(response);
           const status = {
             404: () => {
-              setVisibility('not-found');
+              setVisibility("not-found");
             },
             200: () => {
               setArticle(response.data);
-            }
+            },
           };
           status[response.status]();
           // setUser(response.data);
           setLoading(false);
         }
       });
-      
-      return () => {
-        unmounted = true;
-      };
-  // eslint-disable-next-line
+
+    return () => {
+      unmounted = true;
+    };
+    // eslint-disable-next-line
   }, [user, username, slug]);
 
   if (loading) return <Loading size="32" />;
-  if (visibility === 'not-found') return <NotFound />;
+  if (visibility === "not-found") return <NotFound />;
 
-  return (
-    <Article user={user} article={article} />
-  )
-}
+  return <Article user={user} article={article} />;
+};
 
 export default ArticlePage;

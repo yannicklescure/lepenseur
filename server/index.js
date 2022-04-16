@@ -15,6 +15,7 @@ const {
   getStory,
   getStories,
   updateStory,
+  updateStoryViews,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
@@ -56,6 +57,7 @@ app.get("/api/users/:username", getUser)
 app.get("/api/stories/:username", getStories)
 app.get("/api/stories/:username/:slug", getStory)
 app.put("/api/stories/:username/:slug", updateStory)
+app.put("/api/views", updateStoryViews)
 app.put("/api/users", updateUser)
 app.post("/api/stories", createStory)
 app.post("/api/login", loginUser)

@@ -189,6 +189,7 @@ const createUser = async (req, res) => {
       .toLowerCase()
       .replace(/[^a-zA-Z 0-9]+/g, "");
     const result = await db.collection("users").insertOne(userArray);
+    const { _id, cart, bookmarks, ordersHistory, username } = userArray
     result
       ? res.status(200).json({
           status: 200,
@@ -196,11 +197,12 @@ const createUser = async (req, res) => {
             firstName,
             lastName,
             email,
-            _id: userArray._id,
-            cart: userArray.cart,
-            bookmarks: userArray.bookmarks,
-            ordersHistory: userArray.ordersHistory,
+            _id,
+            cart,
+            bookmarks,
+            ordersHistory,
             imageSrc: "undefined",
+            username
           },
           message: "User Created",
         })
@@ -307,6 +309,52 @@ const updateStory = async (req, res) => {
   }
 };
 
+const updateStoryViews = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, option);
+  const { username, slug } = req.body;
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+
+    const story = await db.collection("stories").findOne({
+      $and : [
+        { username }, { slug }
+      ]
+    });
+    console.log(story);
+
+    if (story) {
+      const updatedStory = {};
+      updatedStory.views = story.views ? story.views + 1 : 1;      
+      console.log(updatedStory);
+
+      const result = await db.collection("stories").updateOne(
+        { _id: story._id },
+        {
+          $set: updatedStory,
+        }
+      );
+      console.log(result);
+      result
+        ? res.status(200).json({
+            status: 200,
+            data: updatedStory,
+            message: "Story updated",
+          })
+        : res.status(409).json({ status: 409, message: "ERROR" });
+    }
+    else {
+      res.status(404).json({ status: 404, message: "Item not found" });
+    }
+    
+  } catch (err) {
+    console.log("Error", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
 const getStory = async (req, res) => {
   console.log(req.params);
   console.log(req.query);
@@ -324,6 +372,7 @@ const getStory = async (req, res) => {
     let data = {};
     if (result) {
       const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username } = result;
+      const views = result.views ? result.views : 1;
       const user = await db.collection("users").findOne({ _id: userId });
       data = {
         _id,
@@ -341,6 +390,7 @@ const getStory = async (req, res) => {
         },
         slug,
         visibility,
+        views
       };
       const switchVisibility = {
         unlisted: () => {
@@ -416,6 +466,7 @@ module.exports = {
   getStory,
   getStories,
   updateStory,
+  updateStoryViews,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,

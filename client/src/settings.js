@@ -19,6 +19,7 @@ export const initialStates = {
     visibility: "public",
     createdAt: "0", 
     updatedAt: "0",
+    views: 0,
   },
   user: {
     _id: null,

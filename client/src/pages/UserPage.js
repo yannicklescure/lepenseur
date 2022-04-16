@@ -34,6 +34,7 @@ const UserPage = () => {
 
   if (loading) return <Loading size="32" />;
 
+  
   return (
     <>
       <Container>
@@ -43,7 +44,13 @@ const UserPage = () => {
       <Spacer />
       <Wrapper>
         {
-          userPage.stories.map(story => (
+          userPage.stories.length === 0
+          ? <EmptyText>
+              <div>Empty</div>
+              <div><em>Definition: </em>Containing nothing.</div>
+              <div><em>Example: </em>This page is empty.</div>
+            </EmptyText>
+          : userPage.stories.map(story => (
             <Article key={story._id} article={story} />
           ))
         }
@@ -68,15 +75,24 @@ const Title = styled.h1`
   font-size: 24px;
   padding-bottom: 4px;
 `;
-const UserImage = styled.img`
-  width: 32px;
-  height: 32px;
-  object-fit: cover;
-  border-radius: 50%;
-`;
 const Spacer = styled.div`
   border-top: 1px solid ${COLORS.grey};
   margin-bottom: 16px;
+`;
+const EmptyText = styled.div`
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+  font-size: 16px;
+
+  & div:first-child {
+    font-weight: bold;
+  }
+
+  & em {
+    font-weight: bold;
+    color: ${COLORS.secondary};
+  }
 `;
 
 export default UserPage;
