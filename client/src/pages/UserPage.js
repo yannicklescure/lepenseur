@@ -33,7 +33,6 @@ const UserPage = () => {
   }, [params]);
 
   if (loading) return <Loading size="32" />;
-
   
   return (
     <>

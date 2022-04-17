@@ -26,7 +26,7 @@ const UpdateStory = () => {
   }, [status]);
 
   const handleUpdateStory = () => {
-    // console.log(story);
+    console.log(story);
     setReady(false);
     sendingStoryToServer();
     setLoading(true);
@@ -44,7 +44,7 @@ const UpdateStory = () => {
           initialStory();
           // receivedUserFromServer({ user: json.data });
           // Go to new story page
-          navigate(`/${user.username}/${story.slug}`);
+          navigate(`/${json.data.user.username}/${json.data.slug}`);
         }
         else {
           // setErrorMessage(json.message);

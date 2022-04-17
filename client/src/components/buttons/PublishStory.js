@@ -44,7 +44,7 @@ const Publish = () => {
           initialStory();
           // receivedUserFromServer({ user: json.data });
           // Go to new story page
-          navigate(`/${user.username}/${story.slug}`);
+          navigate(`/${json.data.username}/${json.data.slug}`);
         }
         else {
           // setErrorMessage(json.message);

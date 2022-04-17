@@ -20,6 +20,7 @@ export const initialStates = {
     createdAt: "0", 
     updatedAt: "0",
     views: 0,
+    tags: [],
   },
   user: {
     _id: null,

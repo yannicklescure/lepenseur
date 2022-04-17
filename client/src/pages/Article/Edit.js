@@ -6,6 +6,7 @@ import NotFound from "../NotFound";
 import Form from "../../components/Stories/Form";
 import Picture from "../../components/Picture";
 import Select from "../../components/Stories/Select";
+import Tags from "../../components/Stories/Tags";
 
 const ArticleEdit = () => {
   const params = useParams();
@@ -61,6 +62,7 @@ const ArticleEdit = () => {
       <Select from="editStory" article={article} />
       <Picture from="editStory" article={article} />
       <Form from="editStory" article={article} />
+      <Tags from="editStory" article={article} />
     </>
   )
 }

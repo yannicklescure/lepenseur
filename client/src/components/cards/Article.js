@@ -26,7 +26,11 @@ const Article = ({ article }) => {
     }
   });
 
-  const handleClick = () => {
+  const stopPropagation = (event) => {
+    event.stopPropagation();
+  }
+
+  const handleClick = (event) => {
     navigate(`/${article.username}/${article.slug}`);
   }
 
@@ -42,12 +46,16 @@ const Article = ({ article }) => {
         </Container>
         <Title 
           to={`/${article.username}/${article.slug}`}
+          onClick={stopPropagation}
           width={width}
         >{article.title}</Title>
         <SubWrapper>
           <ShortText width={width}>{makeTextIntro(article.content)}</ShortText>
           <InfoBar>
-            <Tag to="/">code</Tag>
+            { article.tags?.length > 0 && <Tag 
+              to={"/tag/" + article.tags[0]}
+              onClick={stopPropagation}
+            >{article.tags[0]}</Tag> }
             <Reading>{readingTime(article.content)} min read</Reading>
           </InfoBar>
         </SubWrapper>
@@ -130,7 +138,7 @@ const Tag = styled(NavLink)`
   text-decoration: none;
   font-size: 14px;
   color: ${COLORS.secondary};
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 12px;
   background-color: ${COLORS.tag};
 

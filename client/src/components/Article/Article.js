@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Content from './Content';
 import Head from './Head';
 import Actions from './Actions';
+import Tags from "./Tags";
 
 const Article = ({ user, article }) => {
   return (
@@ -10,6 +11,7 @@ const Article = ({ user, article }) => {
       <Title>{article.title}</Title>
       <StyledImg src={article.imageSrc} />
       <Content article={article} />
+      <Tags article={article} />
       <Actions article={article} />
     </Wrapper>
   )

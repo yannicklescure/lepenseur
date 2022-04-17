@@ -17,6 +17,7 @@ import Edit from "../pages/Settings/Edit";
 import Orders from "../pages/Orders";
 import NewStory from "../pages/NewStory";
 import Articles from "../pages/Articles";
+import Tag from "../pages/Tag";
 
 function App() {
   const {
@@ -32,6 +33,7 @@ function App() {
           <Routes>
             <Route path="*" element={<ErrorPage />} />
             <Route path="/" element={<Homepage />} />
+            <Route path="/tag/:tagName" element={<Tag />} />
             <Route path="/new-story" element={user._id ? <NewStory /> : <Navigate to="/login" replace />} />
             <Route path="/orders-history" element={user._id ? <Orders /> : <Navigate to="/login" replace />} />
             <Route path="/bookmarks" element={user._id ? <Bookmarks /> : <Navigate to="/login" replace />} />

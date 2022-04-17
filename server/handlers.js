@@ -21,10 +21,10 @@ const getUser = async (req, res) => {
     const user = await db.collection("users").findOne({ username: req.params.username });
     console.log(user);
     const { firstName, lastName, username, imageSrc } = user;
-    const stories = await db.collection("stories").find({ username, visibility: 'public' }).toArray();
+    let stories = await db.collection("stories").find({ username, visibility: 'public' }).toArray();
     console.log(stories);
+    stories = stories.sort((a,b) => b.createdAt - a.createdAt);
     let data = { firstName, lastName, username, imageSrc, stories };
-
     user
       ? res.status(200).json({ status: 200, data, message: "success" })
       : res.status(409).json({ status: 409, message: "Item not found" });
@@ -225,12 +225,30 @@ const createStory = async (req, res) => {
     userId,
     imageSrc,
     visibility,
-    username
+    username,
   };
   try {
     await client.connect();
     const db = client.db(DB_NAME);
+    const test = await db.collection("stories").findOne({
+      $and : [
+        { username }, { slug }
+      ]
+    });
+
+    if (test) {
+      newStory.slug = slug + '-' + uuidv4();
+    }
     
+    newStory.tags = [];
+    if (req.body.tags) {
+      if (req.body.tags.includes(',')) {
+        newStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
+      }
+      else {
+        newStory.tags = [req.body.tags];
+      }
+    }
     newStory.createdAt = new Date().getTime();
     newStory.updatedAt = new Date().getTime();
     const result = await db.collection("stories").insertOne(newStory);
@@ -279,6 +297,15 @@ const updateStory = async (req, res) => {
       if (story.imageSrc !== imageSrc) updatedStory.imageSrc = imageSrc;
       if (story.visibility !== visibility) updatedStory.visibility = visibility;
       if (story.username !== user.username) updatedStory.username = user.username;
+      updatedStory.tags = [];
+      if (req.body.tags) {
+        if (req.body.tags.includes(',')) {
+          updatedStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
+        }
+        else {
+          updatedStory.tags = [req.body.tags];
+        }
+      }
       updatedStory.updatedAt = new Date().getTime();
       console.log(updatedStory);
 
@@ -292,7 +319,7 @@ const updateStory = async (req, res) => {
       result
         ? res.status(200).json({
             status: 200,
-            data: updatedStory,
+            data: req.body,
             message: "Story updated",
           })
         : res.status(409).json({ status: 409, message: "ERROR" });
@@ -355,6 +382,33 @@ const updateStoryViews = async (req, res) => {
   }
 };
 
+const getTagStories = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    const result = await db.collection("stories").find({ tags: { $exists: true, $eq: req.params.tagName } }).toArray();
+    // console.log(result);
+    console.log(req.params.tagName);
+    let data = {};
+    if (result) {
+      data = result.sort((a,b) => b.createdAt - a.createdAt);
+      res.status(200).json({ status: 200, data, message: "success" });
+    }
+    else {
+      res.status(409).json({ status: 409, message: "Item not found" });
+    }
+  } catch (err) {
+    console.log("Error Getting Items", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
 const getStory = async (req, res) => {
   console.log(req.params);
   console.log(req.query);
@@ -371,7 +425,7 @@ const getStory = async (req, res) => {
     console.log(result);
     let data = {};
     if (result) {
-      const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username } = result;
+      const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username, tags } = result;
       const views = result.views ? result.views : 1;
       const user = await db.collection("users").findOne({ _id: userId });
       data = {
@@ -390,7 +444,8 @@ const getStory = async (req, res) => {
         },
         slug,
         visibility,
-        views
+        views,
+        tags
       };
       const switchVisibility = {
         unlisted: () => {
@@ -442,7 +497,8 @@ const getStories = async (req, res) => {
     const db = client.db(DB_NAME);
     const userId = req.query._id;
     const data = await db.collection("stories").find({ userId }).toArray();
-    if (data.length > 0) {      
+    if (data.length > 0) {
+      data = data.sort((a,b) => b.createdAt - a.createdAt);  
       res.status(200).json({ status: 200, data, message: "success" });
     }
     else {
@@ -467,6 +523,7 @@ module.exports = {
   getStories,
   updateStory,
   updateStoryViews,
+  getTagStories,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
