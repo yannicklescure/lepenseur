@@ -296,6 +296,7 @@ const updateStory = async (req, res) => {
       if (req.query.delete === 'true') {
         updatedStory = {
           ...updatedStory,
+          visibility: 'unlisted',
           deleted: true
         }
         
@@ -401,7 +402,7 @@ const getTagStories = async (req, res) => {
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    const result = await db.collection("stories").find({ tags: { $exists: true, $eq: req.params.tagName } }).toArray();
+    const result = await db.collection("stories").find({ visibility: 'public', tags: { $exists: true, $eq: req.params.tagName } }).toArray();
     // console.log(result);
     console.log(req.params.tagName);
     let data = {};
@@ -497,7 +498,29 @@ const getStory = async (req, res) => {
   }
 };
 
-const getStories = async (req, res) => {
+const getArticles = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    let data = await db.collection("stories").find({ visibility: 'public' }).toArray();
+    data = data.filter(el => !el.deleted).sort((a,b) => b.createdAt - a.createdAt);
+    console.log(data.length + 'items');
+    const arr = [];
+
+    res.status(200).json({ status: 200, data, message: "success" });
+  } catch (err) {
+    console.log("Error", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
+const getUserStories = async (req, res) => {
   console.log(req.params);
   console.log(req.query);
 
@@ -508,35 +531,9 @@ const getStories = async (req, res) => {
     const userId = req.query._id;
     if (userId) {
       let data = await db.collection("stories").find({ userId }).toArray();
-      data = data.sort((a,b) => b.createdAt - a.createdAt);
+      data = data.filter(el => !el.deleted).sort((a,b) => b.createdAt - a.createdAt);
       console.log(data.length + 'items');
       const arr = [];
-      // data.forEach(async (item) => {
-      //   console.log(item.userId);
-      //   const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username, tags } = item;
-      //   const views = item.views ? item.views : 1;
-      //   const user = await db.collection("users").findOne({ _id: userId });
-      //   console.log(user.username);
-      //   arr.push({
-      //     _id,
-      //     content,
-      //     createdAt,
-      //     imageSrc,
-      //     title,
-      //     updatedAt,
-      //     user: {
-      //       _id: userId,
-      //       firstName: user.firstName,
-      //       lastName: user.lastName,
-      //       imageSrc: user.imageSrc,
-      //       username,
-      //     },
-      //     slug,
-      //     visibility,
-      //     views,
-      //     tags
-      //   });
-      // });
 
       res.status(200).json({ status: 200, data, message: "success" });
     }
@@ -568,7 +565,7 @@ const getTrending = async (req, res) => {
       views: 1,
       createdAt: 1,
       content: 1,
-      tags: 1
+      tags: 1,
     }).toArray();
     console.log('received stories array');
     // console.log(stories);
@@ -619,11 +616,12 @@ module.exports = {
   updateUser,
   createStory,
   getStory,
-  getStories,
+  getUserStories,
   updateStory,
   updateStoryViews,
   getTagStories,
   getTrending,
+  getArticles,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,

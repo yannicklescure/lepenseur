@@ -14,11 +14,12 @@ const {
   updateUser,
   createStory,
   getStory,
-  getStories,
+  getUserStories,
   updateStory,
   updateStoryViews,
   getTagStories,
   getTrending,
+  getArticles,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
@@ -58,8 +59,9 @@ if (process.env.NODE_ENV === 'developement') {
 app.get("/api/users", getUsers)
 app.get("/api/users/:username", getUser)
 app.get("/api/tag/:tagName", getTagStories)
-app.get("/api/stories/:username", getStories)
+app.get("/api/stories/:username", getUserStories)
 app.get("/api/trending", getTrending)
+app.get("/api/articles", getArticles)
 app.get("/api/stories/:username/:slug", getStory)
 app.put("/api/stories/:username/:slug", updateStory)
 app.put("/api/views", updateStoryViews)

@@ -76,6 +76,7 @@ const Main = styled.button`
   margin: 0 0 16px 0;
   cursor: pointer;
   border-bottom: 1px solid ${COLORS.grey};
+  width: 100%;
 
   &:last-child {
     border: none;
