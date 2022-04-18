@@ -1,14 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS } from "../constants";
 
 const Banner = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/signup');
+  }
   return (
     <Wrapper>
       <Container>
         <div>
           <Title>Share the words</Title>
           <SubTitle>Because every word counts, we have made a free speech platform where your audience can reward your work.</SubTitle>
-          <ClickToAction>Start reading</ClickToAction>
+          <ClickToAction onClick={handleClick}>Start reading</ClickToAction>
         </div>
       </Container>
     </Wrapper>
@@ -42,7 +48,7 @@ const Title = styled.h1`
 const SubTitle = styled.div`
   font-size: 24px;
   color: ${COLORS.dark};
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 `;
 const ClickToAction = styled.button`
   background-color: ${COLORS.dark};
