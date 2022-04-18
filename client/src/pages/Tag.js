@@ -55,7 +55,7 @@ const Wrapper = styled.div`
 `;
 const Container = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   /* justify-content: space-between; */
   padding: 0 4px;
   margin-bottom: 16px;
@@ -67,7 +67,7 @@ const HashTag = styled.div`
 const Title = styled.h1`
   /* font-family: 'Mochiy Pop P One', sans-serif; */
   font-size: 24px;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 `;
 const Spacer = styled.div`
   border-top: 1px solid ${COLORS.grey};
