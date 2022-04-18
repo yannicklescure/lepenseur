@@ -4,6 +4,9 @@
 
 Online publishing platform similar to Medium but it’s “le penseur” with the ability to share content privately to an approved crowd. The idea is to provide entrepreneurs with the ability to sell their knowledge through paid articles. Users can pay monthly fees to follow the writer's private articles.
 
+## Online version
+Website is available on heroku https://lepenseur.herokuapp.com/
+
 ## Features
 ### User:
 - Read articles
