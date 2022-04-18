@@ -15,6 +15,7 @@ import Avatar from "../Avatar";
 const Navbar = () => {
   // const navigate = useNavigate();
   const location = useLocation();
+  const isHomepage = location.pathname === '/';
   const cookies = new Cookies();
   cookies.set('path', location.pathname, { path: '/' });
   // console.log(cookies.get('path'));
@@ -47,10 +48,11 @@ const Navbar = () => {
   }  
 
   return (
-    <Wrapper>
+    <Wrapper isHomepage={!user._id && isHomepage}>
+      <NavbarDiv>
       {
         user._id
-          ? (<NavbarDiv>
+          ? (<>
               <Container>
                 <HomeLink to="/">
                   <Logo><FaFeatherAlt size="28" /></Logo>
@@ -92,8 +94,8 @@ const Navbar = () => {
                   />
                 </StyledIconMenu>
               </Container>
-            </NavbarDiv>)
-          : (<NavbarDiv>
+            </>)
+          : (<>
               <HomeLink to="/">
                 <Logo><FaFeatherAlt size="28" /></Logo>
                 <BrandTitle>Le penseur</BrandTitle>
@@ -103,14 +105,15 @@ const Navbar = () => {
                 <LoginLink to="/login">Sign in</LoginLink>
                 <SignupLink to="/signup">Sign up</SignupLink>
               </Container>
-            </NavbarDiv>)
+            </>)
       }
+      </NavbarDiv>
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div`
-  background-color: ${COLORS.white};
+  background-color: ${ ({isHomepage}) => isHomepage ? COLORS.yellowOrange : COLORS.white };
   border-bottom: 1px solid ${COLORS.dark};
   position: fixed;
   width: 100%;

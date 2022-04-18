@@ -80,9 +80,25 @@ const Container = styled.button`
   text-align: left;
   cursor: pointer;
 
-  &:hover {
+  &:first-child:hover {
     background-color: ${COLORS.light};
   }
+  &:nth-child(2):hover {
+    background-color: #F6BD60;
+  }
+  &:nth-child(3):hover {
+    background-color: #F7EDE2;
+  }
+  &:nth-child(4):hover {
+    background-color: #F5CAC3;
+  }
+  &:nth-child(5):hover {
+    background-color: #84A59D;
+  }
+  &:nth-child(6):hover {
+    background-color: #F28482;
+  }
+  /* https://coolors.co/palette/f6bd60-f7ede2-f5cac3-84a59d-f28482 */
 `;
 const Indice = styled.div`
   font-size: 32px;
@@ -117,7 +133,7 @@ const Title = styled.div`
   gap: 8px;
   font-size: 16px;
   font-weight: bold;
-  margin-top: 24px;
+  margin-top: 32px;
 `;
 
 export default Trending;
