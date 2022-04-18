@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { COLORS } from "../constants";
 // import { FaSearch } from "react-icons/fa";
 
-const SearchInput = () => {
+const SearchInput = ({ isUser }) => {
   const location = useLocation();
   const isHomepage = location.pathname === '/';
   const thisInput = useRef();
@@ -37,7 +37,7 @@ const SearchInput = () => {
         clicked={clicked}
         ref={thisInput}
         placeholder={placeholder}
-        isHomepage={isHomepage}
+        isHomepage={isHomepage && !isUser}
       />
     </Wrapper>
   )

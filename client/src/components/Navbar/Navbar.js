@@ -57,7 +57,7 @@ const Navbar = () => {
                 <HomeLink to="/">
                   <Logo><FaFeatherAlt size="28" /></Logo>
                 </HomeLink>
-                <SearchInput />
+                <SearchInput isUser={true} />
               </Container>
               <Container>
                 {
@@ -101,7 +101,7 @@ const Navbar = () => {
                 <BrandTitle>Le penseur</BrandTitle>
               </HomeLink>
               <Container>
-                <SearchInput />
+                <SearchInput isUser={false} />
                 <LoginLink to="/login">Sign in</LoginLink>
                 <SignupLink to="/signup">Sign up</SignupLink>
               </Container>
