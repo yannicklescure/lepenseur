@@ -6,7 +6,7 @@ const Navigation = ({ title }) => {
   return (
     <Wrapper>
       <Title>{title}</Title>
-      <StyledDate>{fullWrittenDate(new Date(), 'en-US')}</StyledDate>
+      <StyledDate>{fullWrittenDate(new Date().getTime(), 'en-US')}</StyledDate>
     </Wrapper>
   )
 }

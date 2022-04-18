@@ -3,6 +3,7 @@
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
 const { MongoClient } = require("mongodb");
+const { readingTime } = require("./helpers");
 require("dotenv").config();
 const { MONGO_URI, DB_NAME } = process.env;
 
@@ -487,7 +488,6 @@ const getStory = async (req, res) => {
 };
 
 const getStories = async (req, res) => {
-  const { username } = req.params;
   console.log(req.params);
   console.log(req.query);
 
@@ -512,6 +512,63 @@ const getStories = async (req, res) => {
   }
 };
 
+const getTrending = async (req, res) => {
+  console.log(req.params);
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    console.log('connecting to db');
+    await client.connect();
+    console.log('connected to db');
+    const db = client.db(DB_NAME);
+    console.log('requesting stories array');
+    let stories = await db.collection("stories").find({ visibility: 'public' }).project({
+      title: 1,
+      slug: 1,
+      username: 1,
+      views: 1,
+      createdAt: 1,
+      content: 1
+    }).toArray();
+    console.log('received stories array');
+    // console.log(stories);
+    if (stories) {
+      const data = stories.map(story => {
+        const {
+          _id,
+          title,
+          slug,
+          username,
+          createdAt,
+          content
+        } = story;
+        const tmp = story;
+        const time = readingTime(content);
+        let views = 1;
+        if (story.views) views = story.views;
+        return {
+          _id,
+          title,
+          slug,
+          username,
+          createdAt,
+          readingTime: time,
+          views
+        };
+      }).sort((a,b) => b.views - a.views).slice(0, 6);
+      res.status(200).json({ status: 200, data, message: "success" })
+    }
+    else {
+      res.status(409).json({ status: 404, message: "Items not found" });
+    }
+  } catch (err) {
+    console.log("Error Getting Items", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
 module.exports = {
   getUser,
   getUsers,
@@ -524,6 +581,7 @@ module.exports = {
   updateStory,
   updateStoryViews,
   getTagStories,
+  getTrending,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,

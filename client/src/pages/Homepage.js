@@ -1,4 +1,5 @@
 import Navigation from "../components/Navigation";
+import Trending from "../components/Trending";
 
 const Homepage = () => {
   const title = 'Homepage';
@@ -6,7 +7,7 @@ const Homepage = () => {
   return (
     <>
       <Navigation title={title} />
-      <div>Homepage</div>
+      <Trending />
     </>
   )
 }

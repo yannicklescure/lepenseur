@@ -75,7 +75,7 @@ const StyledDate = styled.div`
   color: ${COLORS.secondary};
 `;
 const Circle = styled.div`
-  font-size: 4px;
+  font-size: 3px;
 `;
 const EditLink = styled(NavLink)`
   text-decoration: none;

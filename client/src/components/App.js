@@ -31,8 +31,8 @@ function App() {
         <Navbar />
         <Wrapper>
           <Routes>
-            <Route path="*" element={<ErrorPage />} />
             <Route path="/" element={<Homepage />} />
+            <Route path="*" element={<ErrorPage />} />
             <Route path="/tag/:tagName" element={<Tag />} />
             <Route path="/new-story" element={user._id ? <NewStory /> : <Navigate to="/login" replace />} />
             <Route path="/orders-history" element={user._id ? <Orders /> : <Navigate to="/login" replace />} />
