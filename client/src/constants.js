@@ -28,6 +28,10 @@ export const COLORS = {
   mediumAquamarine: "#63CFAF",
   linen: "#FFEDDF",
   yellowOrange: "#FEB548",
+
+  // LePenseur PaletteL
+  greenLight: '#f1faee',
+  turquoise: 'RGB(168, 217, 219)',
 };
 
 // For styled-components

@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS } from "../constants";
-import { FaSearch } from "react-icons/fa";
+// import { FaSearch } from "react-icons/fa";
 
 const SearchInput = () => {
+  const location = useLocation();
+  const isHomepage = location.pathname === '/';
   const thisInput = useRef();
   const [clicked, setClicked] = useState();
   const [placeholder, setPlaceholder] = useState('Search');
@@ -34,6 +37,7 @@ const SearchInput = () => {
         clicked={clicked}
         ref={thisInput}
         placeholder={placeholder}
+        isHomepage={isHomepage}
       />
     </Wrapper>
   )
@@ -49,6 +53,7 @@ const SearchBox = styled.input`
   border: 1px solid ${({clicked}) => clicked ? COLORS.secondary : COLORS.grey};
   color: ${({clicked}) => clicked ? COLORS.secondary : COLORS.grey};
   transition: all 400ms ease;
+  background-color: ${({isHomepage}) => isHomepage ? COLORS.light : COLORS.white};
 
   &:hover {
     border: 1px solid ${COLORS.secondary};

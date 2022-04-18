@@ -113,7 +113,7 @@ const Navbar = () => {
 }
 
 const Wrapper = styled.div`
-  background-color: ${ ({isHomepage}) => isHomepage ? COLORS.yellowOrange : COLORS.white };
+  background-color: ${ ({isHomepage}) => isHomepage ? COLORS.turquoise : COLORS.white };
   border-bottom: 1px solid ${COLORS.dark};
   position: fixed;
   width: 100%;
@@ -134,8 +134,10 @@ const Container = styled.div`
 const Logo = styled.div`
 `;
 const BrandTitle = styled.h1`
-  font-family: 'Mochiy Pop P One', sans-serif;
-  font-size: 24px;
+  /* font-family: 'Mochiy Pop P One', sans-serif; */
+  font-family: 'Playfair Display', serif;
+  font-weight: normal;
+  font-size: 28px;
   padding-bottom: 4px;
 `;
 const HomeLink = styled(NavLink)`
@@ -193,9 +195,6 @@ const NavItem = styled(NavLink)`
   &:hover {
     color: ${COLORS.primary};
   }
-`;
-const NewStory = styled(NavItem)`
-  font-size: 20px;
 `;
 
 export default Navbar;

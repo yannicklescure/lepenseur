@@ -12,8 +12,8 @@ const Banner = () => {
     <Wrapper>
       <Container>
         <div>
-          <Title>Share the words</Title>
-          <SubTitle>Because every word counts, we have made a free speech platform where your audience can reward your work.</SubTitle>
+          <Title>Share your words</Title>
+          <SubTitle>In a matter of free speech, we believe every word counts.<br />Let your audience reward yours.</SubTitle>
           <ClickToAction onClick={handleClick}>Start reading</ClickToAction>
         </div>
       </Container>
@@ -22,17 +22,18 @@ const Banner = () => {
 }
 
 const Wrapper = styled.div`
-  background-color: ${COLORS.yellowOrange};
+  background-color: ${COLORS.turquoise};
   width: calc(100vw);
   margin-left: calc(-1 *(100vw - 950px + 32px)/2);
   margin-top: -16px;
-`;
+  border-bottom: 1px solid ${COLORS.dark};
+  `;
 const Container = styled.div`
   display: flex;
   /* flex-direction: column; */
   align-items: center;
+  min-height: 50vh;
   width: 100%;
-  min-height: 500px;
   max-width: 950px;
   margin: 0 auto;
   padding: 16px;
