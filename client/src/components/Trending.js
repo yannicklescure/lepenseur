@@ -9,7 +9,6 @@ import { TrendingContext } from "../contexts/TrendingContext";
 
 const Trending = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
   const [tags, setTags] = useState([]);
 
   const {
@@ -30,7 +29,6 @@ const Trending = () => {
         .then((response) => {
           // console.log(response.data);
           receivedTrendingFromServer({ trending: response.data });
-          setData(response.data);
           setLoading(false);
           const cleanTags = [];
           response.data.forEach(item => {

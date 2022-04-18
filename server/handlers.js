@@ -269,46 +269,55 @@ const createStory = async (req, res) => {
 };
 
 const updateStory = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
   const client = new MongoClient(MONGO_URI, option);
   const { _id, title, content, user, imageSrc, visibility, slug } = req.body;
+
   try {
     await client.connect();
     const db = client.db(DB_NAME);
 
     const story = await db.collection("stories").findOne({ _id });
-    console.log(story);
+    // console.log(story);
 
     if (story) {
-      // const updatedStory = {
-      //   ...story,
-      //   title, 
-      //   content, 
-      //   user,
-      //   imageSrc, 
-      //   visibility, 
-      //   slug, 
-      //   updatedAt: new Date().getTime()
-      // };
-      // Rather than sending the full object, I just send the updated data.
-      const updatedStory = {};
-      if (story.slug !== slug) updatedStory.slug = slug;
-      if (story.title !== title) updatedStory.title = title;
-      if (story.content !== content) updatedStory.content = content;
-      if (story.userId !== user._id) updatedStory.userId = user._id;
-      if (story.imageSrc !== imageSrc) updatedStory.imageSrc = imageSrc;
-      if (story.visibility !== visibility) updatedStory.visibility = visibility;
-      if (story.username !== user.username) updatedStory.username = user.username;
+      let updatedStory = {
+        ...story, 
+        title, 
+        content, 
+        imageSrc, 
+        visibility, 
+        slug,
+        updatedAt: new Date().getTime(),
+      };
+
+      if (req.query.delete === 'true') {
+        updatedStory = {
+          ...updatedStory,
+          deleted: true
+        }
+        
+      }
+        
       updatedStory.tags = [];
       if (req.body.tags) {
-        if (req.body.tags.includes(',')) {
-          updatedStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
+        console.log(req.body.tags);
+        if (typeof req.body.tags === 'string') {
+          if (req.body.tags.includes(',')) {
+            updatedStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
+          }
+          else {
+            updatedStory.tags = [req.body.tags];
+          }
         }
         else {
-          updatedStory.tags = [req.body.tags];
+          updatedStory.tags = req.body.tags;
         }
       }
-      updatedStory.updatedAt = new Date().getTime();
-      console.log(updatedStory);
+      
+      // console.log(updatedStory);
 
       const result = await db.collection("stories").updateOne(
         { _id },
@@ -316,14 +325,15 @@ const updateStory = async (req, res) => {
           $set: updatedStory,
         }
       );
-      console.log(result);
-      result
-        ? res.status(200).json({
-            status: 200,
-            data: req.body,
-            message: "Story updated",
-          })
-        : res.status(409).json({ status: 409, message: "ERROR" });
+      // console.log(result);
+
+      if (result) {
+        if (updatedStory.deleted) res.status(200).json({ status: 200, message: "Story deleted" });
+        else res.status(200).json({ status: 200, data: req.body, message: "Story updated" });
+      }
+      else {
+        res.status(409).json({ status: 409, message: "ERROR" });
+      }
     }
     else {
       res.status(404).json({ status: 404, message: "Item not found" });
