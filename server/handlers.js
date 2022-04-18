@@ -42,10 +42,10 @@ const getUsers = async (req, res) => {
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    const result = await db.collection("users").find().toArray();
-    console.log(result);
-    result
-      ? res.status(200).json({ status: 200, data: result, message: "success" })
+    const data = await db.collection("users").find().toArray();
+    console.log(data);
+    data
+      ? res.status(200).json({ status: 200, data, message: "success" })
       : res.status(409).json({ status: 409, message: "ERROR" });
   } catch (err) {
     console.log("Error getting list of users", err);
@@ -496,9 +496,38 @@ const getStories = async (req, res) => {
     await client.connect();
     const db = client.db(DB_NAME);
     const userId = req.query._id;
-    const data = await db.collection("stories").find({ userId }).toArray();
-    if (data.length > 0) {
-      data = data.sort((a,b) => b.createdAt - a.createdAt);  
+    if (userId) {
+      let data = await db.collection("stories").find({ userId }).toArray();
+      data = data.sort((a,b) => b.createdAt - a.createdAt);
+      console.log(data.length + 'items');
+      const arr = [];
+      // data.forEach(async (item) => {
+      //   console.log(item.userId);
+      //   const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username, tags } = item;
+      //   const views = item.views ? item.views : 1;
+      //   const user = await db.collection("users").findOne({ _id: userId });
+      //   console.log(user.username);
+      //   arr.push({
+      //     _id,
+      //     content,
+      //     createdAt,
+      //     imageSrc,
+      //     title,
+      //     updatedAt,
+      //     user: {
+      //       _id: userId,
+      //       firstName: user.firstName,
+      //       lastName: user.lastName,
+      //       imageSrc: user.imageSrc,
+      //       username,
+      //     },
+      //     slug,
+      //     visibility,
+      //     views,
+      //     tags
+      //   });
+      // });
+
       res.status(200).json({ status: 200, data, message: "success" });
     }
     else {
@@ -528,7 +557,8 @@ const getTrending = async (req, res) => {
       username: 1,
       views: 1,
       createdAt: 1,
-      content: 1
+      content: 1,
+      tags: 1
     }).toArray();
     console.log('received stories array');
     // console.log(stories);
@@ -540,7 +570,8 @@ const getTrending = async (req, res) => {
           slug,
           username,
           createdAt,
-          content
+          content,
+          tags
         } = story;
         const tmp = story;
         const time = readingTime(content);
@@ -553,7 +584,8 @@ const getTrending = async (req, res) => {
           username,
           createdAt,
           readingTime: time,
-          views
+          views,
+          tags
         };
       }).sort((a,b) => b.views - a.views).slice(0, 6);
       res.status(200).json({ status: 200, data, message: "success" })

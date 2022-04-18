@@ -26,7 +26,7 @@ const Publish = () => {
   }, [status]);
 
   const handlePublishStory = () => {
-    console.log(story);
+    // console.log(story);
     setReady(false);
     sendingStoryToServer();
     setLoading(true);

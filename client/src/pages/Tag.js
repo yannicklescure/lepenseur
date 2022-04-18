@@ -4,8 +4,9 @@ import styled from "styled-components";
 import Article from "../components/cards/Article";
 import Loading from "../components/Loading";
 import { COLORS } from "../constants";
-import { capitalizeStr } from "../helpers";
+// import { capitalizeStr } from "../helpers";
 import NotFound from "./NotFound";
+import { FaHashtag } from "react-icons/fa";
 
 const Tag = () => {
   const params = useParams();
@@ -33,7 +34,8 @@ const Tag = () => {
   return (
     <>
       <Container>
-        <Title>#{tagName}</Title>
+        <HashTag><FaHashtag /></HashTag>
+        <Title>{tagName}</Title>
       </Container>
       <Spacer />
       <Wrapper>
@@ -54,12 +56,16 @@ const Wrapper = styled.div`
 const Container = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   padding: 0 4px;
   margin-bottom: 16px;
+  gap: 4px;
+`;
+const HashTag = styled.div`
+  font-size: 24px;
 `;
 const Title = styled.h1`
-  font-family: 'Mochiy Pop P One', sans-serif;
+  /* font-family: 'Mochiy Pop P One', sans-serif; */
   font-size: 24px;
   padding-bottom: 4px;
 `;

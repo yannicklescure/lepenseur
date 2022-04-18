@@ -30,21 +30,25 @@ const ArticlesPage = () => {
       fetch(`/api/stories/${username}?_id=${user._id}`)
         .then((res) => res.json())
         .then((response) => {
-          // console.log(response.data);
-          const items = response.data.sort((a,b) => b.createdAt - a.createdAt);
-          setData(items);
-          setArticles(items);
-          setLoading(false);
-          const arr = ["all"];
-          items.forEach(item => {
-            if (!arr.includes(item.visibility)) arr.push(item.visibility);
-          });
-          const copy = labels;
-          labels.forEach((label, index) => {
-            if (!arr.includes(label)) copy.splice(index, 1, null);
-          });
-          // console.log(copy);
-          setLabels(copy.filter(el => el !== null));
+          // console.log(response);
+          try {
+            const items = response.data.sort((a,b) => b.createdAt - a.createdAt);
+            setData(items);
+            setArticles(items);
+            setLoading(false);
+            const arr = ["all"];
+            items.forEach(item => {
+              if (!arr.includes(item.visibility)) arr.push(item.visibility);
+            });
+            const copy = labels;
+            labels.forEach((label, index) => {
+              if (!arr.includes(label)) copy.splice(index, 1, null);
+            });
+            // console.log(copy);
+            setLabels(copy.filter(el => el !== null));
+          } catch (err) {
+            console.log("Error Getting Items", err);
+          }
         });
     }
     // eslint-disable-next-line

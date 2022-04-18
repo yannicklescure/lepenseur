@@ -26,7 +26,7 @@ const UpdateStory = () => {
   }, [status]);
 
   const handleUpdateStory = () => {
-    console.log(story);
+    // console.log(story);
     setReady(false);
     sendingStoryToServer();
     setLoading(true);

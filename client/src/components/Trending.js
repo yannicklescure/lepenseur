@@ -3,12 +3,13 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS } from "../constants";
 import { fullWrittenDate, shortWrittenDate } from "../helpers";
-import { FaCircle, FaRegPaperPlane } from "react-icons/fa";
+import { FaCircle, FaRegPaperPlane, FaHashtag } from "react-icons/fa";
 import Loading from "./Loading/Loading";
 
 const Trending = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [tags, setTags] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -18,6 +19,16 @@ const Trending = () => {
         // console.log(response.data);
         setData(response.data);
         setLoading(false);
+        const cleanTags = [];
+        response.data.forEach(item => {
+          // console.log(item);
+          if (item.tags) {
+            item.tags.forEach(tag => {
+              if (!cleanTags.includes(tag)) cleanTags.push(tag);
+            });
+          }
+        });
+        setTags(cleanTags);
       });
     // eslint-disable-next-line
   }, []);
@@ -54,6 +65,18 @@ const Trending = () => {
           ))
         }
       </Wrapper>
+      <Tags>
+        <FaHashtag />
+        {
+          tags.map(tag => (
+            <Tag 
+              key={tag}
+              to={"/tag/" + tag}
+              // onClick={stopPropagation}
+            >{tag}</Tag>
+          ))
+        }
+      </Tags>
     </>
   )
 }
@@ -62,6 +85,13 @@ const Wrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin: 16px 0 24px 0;
+`;
+const Tags = styled.div`
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 `;
 const SubWrapper = styled.div`
   display: flex;
@@ -134,6 +164,19 @@ const Title = styled.div`
   font-size: 16px;
   font-weight: bold;
   margin-top: 32px;
+`;
+const Tag = styled(NavLink)`
+  text-decoration: none;
+  font-size: 14px;
+  color: ${COLORS.secondary};
+  padding: 4px 10px;
+  border-radius: 12px;
+  background-color: ${COLORS.tag};
+
+  &:hover {
+    color: ${COLORS.dark};
+    background-color: ${COLORS.grey};
+  }
 `;
 
 export default Trending;
