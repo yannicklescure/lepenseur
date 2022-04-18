@@ -8,7 +8,9 @@
   "scripts": {
     "start:client": "cd client && yarn start",
     "start:server": "cd server && yarn start",
-    "dev:server": "cd server && yarn dev"
+    "dev:server": "cd server && yarn dev",
+    "start": "node server/index.js",
+    "heroku-postbuild": "cd server && yarn install && cd ../client && yarn install && yarn run build"
   },
   "dependencies": {
     "bcrypt": "^5.0.1"
