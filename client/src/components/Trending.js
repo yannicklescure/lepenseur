@@ -1,35 +1,52 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS } from "../constants";
 import { fullWrittenDate, shortWrittenDate } from "../helpers";
 import { FaCircle, FaRegPaperPlane, FaHashtag } from "react-icons/fa";
 import Loading from "./Loading/Loading";
+import { TrendingContext } from "../contexts/TrendingContext";
 
 const Trending = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [tags, setTags] = useState([]);
 
+  const {
+    state: { status, trending },
+    actions: {
+      loadingTrending,
+      receivedTrendingFromServer,
+      errorTrendingFromServer,
+    },
+  } = useContext(TrendingContext);
+
   useEffect(() => {
-    setLoading(true);
-    fetch(`/api/trending`)
-      .then((res) => res.json())
-      .then((response) => {
-        // console.log(response.data);
-        setData(response.data);
-        setLoading(false);
-        const cleanTags = [];
-        response.data.forEach(item => {
-          // console.log(item);
-          if (item.tags) {
-            item.tags.forEach(tag => {
-              if (!cleanTags.includes(tag)) cleanTags.push(tag);
-            });
-          }
+    if (status === 'init-trending') setLoading(true);
+    loadingTrending();
+    try {
+      fetch(`/api/trending`)
+        .then((res) => res.json())
+        .then((response) => {
+          // console.log(response.data);
+          receivedTrendingFromServer({ trending: response.data });
+          setData(response.data);
+          setLoading(false);
+          const cleanTags = [];
+          response.data.forEach(item => {
+            // console.log(item);
+            if (item.tags) {
+              item.tags.forEach(tag => {
+                if (!cleanTags.includes(tag)) cleanTags.push(tag);
+              });
+            }
+          });
+          setTags(cleanTags);
         });
-        setTags(cleanTags);
-      });
+    }
+    catch (err) {
+      errorTrendingFromServer({ message: err });
+    }
     // eslint-disable-next-line
   }, []);
   
@@ -47,7 +64,7 @@ const Trending = () => {
       </Title>
       <Wrapper>
         {
-          data.map((item, index) => (
+          trending.map((item, index) => (
             <Container key={item._id}>
               <Indice>0{index + 1}.</Indice>
               <SubWrapper>
@@ -97,6 +114,30 @@ const SubWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
+const Indice = styled.div`
+  font-size: 32px;
+  font-weight: bold;
+  color: ${COLORS.grey};
+`;
+const StyledInfo = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 14px;
+  gap: 4px;
+  color: ${COLORS.secondary};
+  margin-top: 8px;
+`;
+const StyledLink = styled(NavLink)`
+  font-size: 16px;
+  color: ${COLORS.dark};
+  text-decoration: none;
+  margin-top: 3px;
+
+  &:hover {
+    color: ${COLORS.black};
+  }
+`;
 const Container = styled.button`
   display: flex;
   width: 50%;
@@ -111,7 +152,7 @@ const Container = styled.button`
   cursor: pointer;
 
   &:first-child:hover {
-    background-color: ${COLORS.light};
+    background-color: #90e0ef;
   }
   &:nth-child(2):hover {
     background-color: #F6BD60;
@@ -128,31 +169,12 @@ const Container = styled.button`
   &:nth-child(6):hover {
     background-color: #F28482;
   }
-  /* https://coolors.co/palette/f6bd60-f7ede2-f5cac3-84a59d-f28482 */
-`;
-const Indice = styled.div`
-  font-size: 32px;
-  font-weight: bold;
-  color: ${COLORS.grey};
-`;
-const StyledLink = styled(NavLink)`
-  font-size: 16px;
-  color: ${COLORS.dark};
-  text-decoration: none;
-  margin-top: 3px;
 
-  &:hover {
-    color: ${COLORS.black};
-  }
-`;
-const StyledInfo = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  font-size: 14px;
-  gap: 4px;
-  color: ${COLORS.secondary};
-  margin-top: 8px;
+  &:hover ${StyledLink} { color: ${COLORS.black}; }
+  &:hover ${Indice} { color: ${COLORS.secondary}; }
+  &:hover ${StyledInfo} { color: ${COLORS.dark}; }
+
+  /* https://coolors.co/palette/f6bd60-f7ede2-f5cac3-84a59d-f28482 */
 `;
 const Circle = styled.div`
   font-size: 3px;

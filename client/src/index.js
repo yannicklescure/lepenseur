@@ -4,6 +4,7 @@ import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './contexts/UserContext';
 import { StoryProvider } from './contexts/StoryContext';
+import { TrendingProvider } from './contexts/TrendingContext';
 
 // Hide all app console.logs
 if (process.env.NODE_ENV !== "development") console.log = () => {};
@@ -13,7 +14,9 @@ const root = createRoot(container);
 root.render(
   <UserProvider>
   <StoryProvider>
+  <TrendingProvider>
     <App />
+  </TrendingProvider>
   </StoryProvider>
   </UserProvider>
 );
