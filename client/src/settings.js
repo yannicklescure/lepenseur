@@ -17,7 +17,7 @@ export const initialStates = {
     userId: null,
     imageSrc: "undefined",
     visibility: "public",
-    createdAt: "0", 
+    createdAt: "0",
     updatedAt: "0",
     views: 0,
     tags: [],
@@ -29,10 +29,11 @@ export const initialStates = {
     email: "",
     cart: [],
     bookmarks: [],
+    likes: [],
     ordersHistory: [],
     imageSrc: "undefined",
-    createdAt: "0", 
+    createdAt: "0",
     updatedAt: "0",
   },
   trending: [],
-}
+};

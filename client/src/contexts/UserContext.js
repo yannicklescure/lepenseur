@@ -100,7 +100,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const updateUser = (data) => {
-    console.log(data);
+    // console.log(data);
     setLocalStorage(data);
     dispatch({
       ...data,

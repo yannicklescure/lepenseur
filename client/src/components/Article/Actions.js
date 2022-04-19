@@ -1,15 +1,17 @@
 import styled from "styled-components";
-import { FaBookmark, FaRegBookmark, FaRegHeart, FaHeart, FaShare } from "react-icons/fa";
+import { FaBookmark, FaRegBookmark, FaShare, FaRegCommentAlt } from "react-icons/fa";
 import { COLORS } from "../../constants";
+import Like from "../Like";
 
 const Actions = ({ article }) => {
   return (
     <Wrapper>
       <Container>
-        <FaRegHeart />
-        {article.views} views
+        <div>{article.views} views</div>
+        <Like article={article} />
       </Container>
       <Container>
+        <FaRegCommentAlt />
         <FaRegBookmark />
         <FaShare />
       </Container>

@@ -271,6 +271,7 @@ const createStory = async (req, res) => {
 const updateStory = async (req, res) => {
   console.log(req.params);
   console.log(req.query);
+  console.log(req.body);
 
   const client = new MongoClient(MONGO_URI, option);
   const { _id, title, content, user, imageSrc, visibility, slug } = req.body;
@@ -283,54 +284,75 @@ const updateStory = async (req, res) => {
     // console.log(story);
 
     if (story) {
-      let updatedStory = {
-        ...story, 
-        title, 
-        content, 
-        imageSrc, 
-        visibility, 
-        slug,
-        updatedAt: new Date().getTime(),
-      };
-
-      if (req.query.delete === 'true') {
-        updatedStory = {
-          ...updatedStory,
-          visibility: 'unlisted',
-          deleted: true
+      console.log(story.userId === req.query._id);
+      console.log('story ' + story.userId);
+      console.log('current ' + req.query._id);
+      if (story.userId === req.query._id) {
+        let updatedStory = {
+          ...story, 
+          title, 
+          content, 
+          imageSrc, 
+          visibility, 
+          slug,
+          updatedAt: new Date().getTime(),
+        };
+  
+        if (req.query.delete === 'true') {
+          updatedStory = {
+            ...updatedStory,
+            visibility: 'unlisted',
+            deleted: true
+          }
+          
         }
-        
-      }
-        
-      updatedStory.tags = [];
-      if (req.body.tags) {
-        console.log(req.body.tags);
-        if (typeof req.body.tags === 'string') {
-          if (req.body.tags.includes(',')) {
-            updatedStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
+          
+        updatedStory.tags = [];
+        if (req.body.tags) {
+          console.log(req.body.tags);
+          if (typeof req.body.tags === 'string') {
+            if (req.body.tags.includes(',')) {
+              updatedStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
+            }
+            else {
+              updatedStory.tags = [req.body.tags];
+            }
           }
           else {
-            updatedStory.tags = [req.body.tags];
+            updatedStory.tags = req.body.tags;
           }
         }
+        
+        // console.log(updatedStory);
+  
+        const result = await db.collection("stories").updateOne(
+          { _id },
+          {
+            $set: updatedStory,
+          }
+        );
+        // console.log(result);
+  
+        if (result) {
+          if (updatedStory.deleted) res.status(200).json({ status: 200, message: "Story deleted" });
+          else res.status(200).json({ status: 200, data: req.body, message: "Story updated" });
+        }
         else {
-          updatedStory.tags = req.body.tags;
+          res.status(409).json({ status: 409, message: "ERROR" });
         }
       }
-      
-      // console.log(updatedStory);
-
-      const result = await db.collection("stories").updateOne(
-        { _id },
-        {
-          $set: updatedStory,
-        }
-      );
-      // console.log(result);
-
-      if (result) {
-        if (updatedStory.deleted) res.status(200).json({ status: 200, message: "Story deleted" });
-        else res.status(200).json({ status: 200, data: req.body, message: "Story updated" });
+      else if (req.body.likes >= 0) {
+        console.log('like');
+        const result = await db.collection("stories").updateOne(
+          { _id },
+          {
+            $set: {
+              likes: req.body.likes
+            },
+          }
+        );
+        if (result) res.status(200).json({ status: 200, data: req.body, message: "Story updated" });
+        else res.status(409).json({ status: 409, message: "ERROR" });
       }
       else {
         res.status(409).json({ status: 409, message: "ERROR" });
@@ -439,6 +461,7 @@ const getStory = async (req, res) => {
     if (result) {
       const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username, tags } = result;
       const views = result.views ? result.views : 1;
+      const likes = result.likes ? result.likes : 0;
       const user = await db.collection("users").findOne({ _id: userId });
       data = {
         _id,
@@ -457,7 +480,8 @@ const getStory = async (req, res) => {
         slug,
         visibility,
         views,
-        tags
+        tags,
+        likes,
       };
       const switchVisibility = {
         unlisted: () => {
