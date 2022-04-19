@@ -271,7 +271,7 @@ const createStory = async (req, res) => {
 const updateStory = async (req, res) => {
   console.log(req.params);
   console.log(req.query);
-  console.log(req.body);
+  // console.log(req.body);
 
   const client = new MongoClient(MONGO_URI, option);
   const { _id, title, content, user, imageSrc, visibility, slug } = req.body;
@@ -306,6 +306,10 @@ const updateStory = async (req, res) => {
           }
           
         }
+
+        console.log(req.body.likes);
+        if (req.body.likes) updatedStory.likes = req.body.likes;
+        else updatedStory.likes = 0;
           
         updatedStory.tags = [];
         if (req.body.tags) {

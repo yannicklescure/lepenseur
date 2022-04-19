@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS } from "../constants";
 import { fullWrittenDate, shortWrittenDate } from "../helpers";
@@ -8,6 +8,7 @@ import Loading from "./Loading/Loading";
 import { TrendingContext } from "../contexts/TrendingContext";
 
 const Trending = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [tags, setTags] = useState([]);
 
@@ -52,6 +53,11 @@ const Trending = () => {
     event.stopPropagation();
   }
 
+  const handleClick = (item) => {
+    navigate(`/${item.username}/${item.slug}`);
+  }
+
+
   if (loading) return <Loading size="32" />;
 
   return (
@@ -63,7 +69,10 @@ const Trending = () => {
       <Wrapper>
         {
           trending.map((item, index) => (
-            <Container key={item._id}>
+            <Container 
+              key={item._id}
+              onClick={() => handleClick(item)}
+            >
               <Indice>0{index + 1}.</Indice>
               <SubWrapper>
                 <StyledLink 
