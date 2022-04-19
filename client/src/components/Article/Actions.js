@@ -4,7 +4,7 @@ import { COLORS } from "../../constants";
 import Like from "../Like";
 import Bookmark from "../Bookmark";
 
-const Actions = ({ article }) => {
+const Actions = ({ article, handleShowComments }) => {
   return (
     <Wrapper>
       <Container>
@@ -12,7 +12,9 @@ const Actions = ({ article }) => {
         <Like article={article} />
       </Container>
       <Container>
-        <FaRegCommentAlt />
+        <Comments onClick={handleShowComments}>
+          <FaRegCommentAlt />
+        </Comments>
         <Bookmark article={article} />
         <FaShare />
       </Container>
@@ -31,6 +33,16 @@ const Container = styled.div`
   align-items: center;
   color: ${COLORS.secondary};
   gap: 16px;
+`;
+const Comments = styled.button`
+  display: flex;
+  align-items: center;
+  background: none;
+  outline: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 16px;
 `;
 
 export default Actions;

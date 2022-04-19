@@ -3,8 +3,15 @@ import Content from './Content';
 import Head from './Head';
 import Actions from './Actions';
 import Tags from "./Tags";
+import Comments from "../Comments";
+import { useState } from "react";
 
 const Article = ({ user, article }) => {
+  const [show, setShow] = useState(false);
+  const handleShowComments = () => {
+    setShow(!show);
+  }
+
   return (
     <Wrapper>
       <Head user={user} article={article} />
@@ -12,7 +19,14 @@ const Article = ({ user, article }) => {
       <StyledImg src={article.imageSrc} />
       <Content article={article} />
       <Tags article={article} />
-      <Actions article={article} />
+      <Actions
+        article={article}
+        handleShowComments={handleShowComments}
+      />
+      <Comments 
+        show={show}
+        handleShowComments={handleShowComments}
+      />
     </Wrapper>
   )
 }
