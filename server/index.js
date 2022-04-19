@@ -21,6 +21,7 @@ const {
   getTagStories,
   getTrending,
   getArticles,
+  getBookmarks,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
@@ -66,6 +67,7 @@ app.get("/api/tag/:tagName", getTagStories);
 app.get("/api/stories/:username", getUserStories);
 app.get("/api/trending", getTrending);
 app.get("/api/articles", getArticles);
+app.get("/api/bookmarks", getBookmarks);
 app.get("/api/stories/:username/:slug", getStory);
 app.put("/api/stories/:username/:slug", updateStory);
 app.put("/api/views", updateStoryViews);

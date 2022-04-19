@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { FaBookmark, FaRegBookmark, FaShare, FaRegCommentAlt } from "react-icons/fa";
+import { FaShare, FaRegCommentAlt } from "react-icons/fa";
 import { COLORS } from "../../constants";
 import Like from "../Like";
+import Bookmark from "../Bookmark";
 
 const Actions = ({ article }) => {
   return (
@@ -12,7 +13,7 @@ const Actions = ({ article }) => {
       </Container>
       <Container>
         <FaRegCommentAlt />
-        <FaRegBookmark />
+        <Bookmark article={article} />
         <FaShare />
       </Container>
     </Wrapper>

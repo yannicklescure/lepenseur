@@ -70,11 +70,14 @@ const Navbar = () => {
                     : (
                       <>
                         <NavItem to="/">
-                          { user.bookmarks.length === 0 ? <FaBell /> : <FaRegBell /> }
+                          { user.bookmarks.length === 0 ? <FaRegBell /> : <FaBell /> }
                         </NavItem>
-                        <NavItem to="/bookmarks">
-                          { user.bookmarks.length === 0 ? <FaBookmark /> : <FaRegBookmark /> }
-                        </NavItem>
+                        { user.bookmarks.length > 0 && (
+                            <NavItem to="/bookmarks">
+                              <FaBookmark />
+                            </NavItem>
+                          )
+                        }
                         <NavItem to="/new-story">
                           <FaRegFileAlt />
                         </NavItem>

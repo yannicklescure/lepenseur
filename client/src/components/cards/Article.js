@@ -4,6 +4,7 @@ import { COLORS } from "../../constants";
 import { makeTextIntro, readingTime, shortWrittenDate } from "../../helpers";
 import { FaLock, FaUserSlash } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
+import Bookmark from "../Bookmark";
 
 const Article = ({ article }) => {
   const navigate = useNavigate();

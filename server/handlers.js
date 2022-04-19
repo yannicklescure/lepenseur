@@ -19,12 +19,17 @@ const getUser = async (req, res) => {
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    const user = await db.collection("users").findOne({ username: req.params.username });
+    const user = await db
+      .collection("users")
+      .findOne({ username: req.params.username });
     console.log(user);
     const { firstName, lastName, username, imageSrc } = user;
-    let stories = await db.collection("stories").find({ username, visibility: 'public' }).toArray();
+    let stories = await db
+      .collection("stories")
+      .find({ username, visibility: "public" })
+      .toArray();
     console.log(stories);
-    stories = stories.sort((a,b) => b.createdAt - a.createdAt);
+    stories = stories.sort((a, b) => b.createdAt - a.createdAt);
     let data = { firstName, lastName, username, imageSrc, stories };
     user
       ? res.status(200).json({ status: 200, data, message: "success" })
@@ -119,6 +124,7 @@ const loginUser = async (req, res) => {
           bookmarks,
           ordersHistory,
           imageSrc,
+          likes,
         } = loginAuth;
 
         return res.status(200).json({
@@ -134,6 +140,7 @@ const loginUser = async (req, res) => {
             bookmarks,
             ordersHistory,
             imageSrc,
+            likes,
           },
         });
       } else
@@ -154,14 +161,12 @@ const createUser = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   const userArray = {
     _id: uuidv4(),
-    firstName,
-    lastName,
-    email,
-    password,
+    ...req.body,
     cart: [],
     bookmarks: [],
     ordersHistory: [],
     imageSrc: "undefined",
+    likes: [],
   };
   try {
     await client.connect();
@@ -190,21 +195,10 @@ const createUser = async (req, res) => {
       .toLowerCase()
       .replace(/[^a-zA-Z 0-9]+/g, "");
     const result = await db.collection("users").insertOne(userArray);
-    const { _id, cart, bookmarks, ordersHistory, username } = userArray
     result
       ? res.status(200).json({
           status: 200,
-          data: {
-            firstName,
-            lastName,
-            email,
-            _id,
-            cart,
-            bookmarks,
-            ordersHistory,
-            imageSrc: "undefined",
-            username
-          },
+          data: userArray,
           message: "User Created",
         })
       : res.status(409).json({ status: 409, message: "ERROR" });
@@ -217,7 +211,8 @@ const createUser = async (req, res) => {
 
 const createStory = async (req, res) => {
   const client = new MongoClient(MONGO_URI, option);
-  const { title, content, userId, imageSrc, visibility, slug, username } = req.body;
+  const { title, content, userId, imageSrc, visibility, slug, username } =
+    req.body;
   const newStory = {
     _id: uuidv4(),
     slug,
@@ -232,21 +227,21 @@ const createStory = async (req, res) => {
     await client.connect();
     const db = client.db(DB_NAME);
     const test = await db.collection("stories").findOne({
-      $and : [
-        { username }, { slug }
-      ]
+      $and: [{ username }, { slug }],
     });
 
     if (test) {
-      newStory.slug = slug + '-' + uuidv4();
+      newStory.slug = slug + "-" + uuidv4();
     }
-    
+
     newStory.tags = [];
     if (req.body.tags) {
-      if (req.body.tags.includes(',')) {
-        newStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
-      }
-      else {
+      if (req.body.tags.includes(",")) {
+        newStory.tags = req.body.tags
+          .split(",")
+          .map((el) => el.trim())
+          .filter((el) => el !== "");
+      } else {
         newStory.tags = [req.body.tags];
       }
     }
@@ -285,50 +280,50 @@ const updateStory = async (req, res) => {
 
     if (story) {
       console.log(story.userId === req.query._id);
-      console.log('story ' + story.userId);
-      console.log('current ' + req.query._id);
+      console.log("story " + story.userId);
+      console.log("current " + req.query._id);
       if (story.userId === req.query._id) {
         let updatedStory = {
-          ...story, 
-          title, 
-          content, 
-          imageSrc, 
-          visibility, 
+          ...story,
+          title,
+          content,
+          imageSrc,
+          visibility,
           slug,
           updatedAt: new Date().getTime(),
         };
-  
-        if (req.query.delete === 'true') {
+
+        if (req.query.delete === "true") {
           updatedStory = {
             ...updatedStory,
-            visibility: 'unlisted',
-            deleted: true
-          }
-          
+            visibility: "unlisted",
+            deleted: true,
+          };
         }
 
         console.log(req.body.likes);
         if (req.body.likes) updatedStory.likes = req.body.likes;
         else updatedStory.likes = 0;
-          
+
         updatedStory.tags = [];
         if (req.body.tags) {
           console.log(req.body.tags);
-          if (typeof req.body.tags === 'string') {
-            if (req.body.tags.includes(',')) {
-              updatedStory.tags = req.body.tags.split(',').map(el => el.trim()).filter(el => el !== '');
-            }
-            else {
+          if (typeof req.body.tags === "string") {
+            if (req.body.tags.includes(",")) {
+              updatedStory.tags = req.body.tags
+                .split(",")
+                .map((el) => el.trim())
+                .filter((el) => el !== "");
+            } else {
               updatedStory.tags = [req.body.tags];
             }
-          }
-          else {
+          } else {
             updatedStory.tags = req.body.tags;
           }
         }
-        
+
         // console.log(updatedStory);
-  
+
         const result = await db.collection("stories").updateOne(
           { _id },
           {
@@ -336,36 +331,38 @@ const updateStory = async (req, res) => {
           }
         );
         // console.log(result);
-  
+
         if (result) {
-          if (updatedStory.deleted) res.status(200).json({ status: 200, message: "Story deleted" });
-          else res.status(200).json({ status: 200, data: req.body, message: "Story updated" });
-        }
-        else {
+          if (updatedStory.deleted)
+            res.status(200).json({ status: 200, message: "Story deleted" });
+          else
+            res
+              .status(200)
+              .json({ status: 200, data: req.body, message: "Story updated" });
+        } else {
           res.status(409).json({ status: 409, message: "ERROR" });
         }
-      }
-      else if (req.body.likes >= 0) {
-        console.log('like');
+      } else if (req.body.likes >= 0) {
+        console.log("like");
         const result = await db.collection("stories").updateOne(
           { _id },
           {
             $set: {
-              likes: req.body.likes
+              likes: req.body.likes,
             },
           }
         );
-        if (result) res.status(200).json({ status: 200, data: req.body, message: "Story updated" });
+        if (result)
+          res
+            .status(200)
+            .json({ status: 200, data: req.body, message: "Story updated" });
         else res.status(409).json({ status: 409, message: "ERROR" });
-      }
-      else {
+      } else {
         res.status(409).json({ status: 409, message: "ERROR" });
       }
-    }
-    else {
+    } else {
       res.status(404).json({ status: 404, message: "Item not found" });
     }
-    
   } catch (err) {
     console.log("Error", err);
     res.status(500).json({ status: 500, message: err });
@@ -382,15 +379,13 @@ const updateStoryViews = async (req, res) => {
     const db = client.db(DB_NAME);
 
     const story = await db.collection("stories").findOne({
-      $and : [
-        { username }, { slug }
-      ]
+      $and: [{ username }, { slug }],
     });
     console.log(story);
 
     if (story) {
       const updatedStory = {};
-      updatedStory.views = story.views ? story.views + 1 : 1;      
+      updatedStory.views = story.views ? story.views + 1 : 1;
       console.log(updatedStory);
 
       const result = await db.collection("stories").updateOne(
@@ -407,11 +402,9 @@ const updateStoryViews = async (req, res) => {
             message: "Story updated",
           })
         : res.status(409).json({ status: 409, message: "ERROR" });
-    }
-    else {
+    } else {
       res.status(404).json({ status: 404, message: "Item not found" });
     }
-    
   } catch (err) {
     console.log("Error", err);
     res.status(500).json({ status: 500, message: err });
@@ -428,15 +421,20 @@ const getTagStories = async (req, res) => {
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    const result = await db.collection("stories").find({ visibility: 'public', tags: { $exists: true, $eq: req.params.tagName } }).toArray();
+    const result = await db
+      .collection("stories")
+      .find({
+        visibility: "public",
+        tags: { $exists: true, $eq: req.params.tagName },
+      })
+      .toArray();
     // console.log(result);
     console.log(req.params.tagName);
     let data = {};
     if (result) {
-      data = result.sort((a,b) => b.createdAt - a.createdAt);
+      data = result.sort((a, b) => b.createdAt - a.createdAt);
       res.status(200).json({ status: 200, data, message: "success" });
-    }
-    else {
+    } else {
       res.status(409).json({ status: 409, message: "Item not found" });
     }
   } catch (err) {
@@ -456,14 +454,24 @@ const getStory = async (req, res) => {
     await client.connect();
     const db = client.db(DB_NAME);
     const result = await db.collection("stories").findOne({
-      $and : [
-        { username: req.params.username }, { slug: req.params.slug }
-      ]
+      $and: [{ username: req.params.username }, { slug: req.params.slug }],
     });
     console.log(result);
     let data = {};
     if (result) {
-      const { title, content, imageSrc, createdAt, updatedAt, _id, userId, slug, visibility, username, tags } = result;
+      const {
+        title,
+        content,
+        imageSrc,
+        createdAt,
+        updatedAt,
+        _id,
+        userId,
+        slug,
+        visibility,
+        username,
+        tags,
+      } = result;
       const views = result.views ? result.views : 1;
       const likes = result.likes ? result.likes : 0;
       const user = await db.collection("users").findOne({ _id: userId });
@@ -489,33 +497,47 @@ const getStory = async (req, res) => {
       };
       const switchVisibility = {
         unlisted: () => {
-          if (result.visibility === 'unlisted' && req.query._id !== result.userId) {
+          if (
+            result.visibility === "unlisted" &&
+            req.query._id !== result.userId
+          ) {
             data = {};
-            return res.status(404).json({ status: 404, message: "Item not found" });
-          }
-          else {
-            return res.status(200).json({ status: 200, data, message: "success" });
+            return res
+              .status(404)
+              .json({ status: 404, message: "Item not found" });
+          } else {
+            return res
+              .status(200)
+              .json({ status: 200, data, message: "success" });
           }
         },
         private: () => {
-          if (result.visibility === 'unlisted' && req.query._id !== result.userId) {
+          if (
+            result.visibility === "unlisted" &&
+            req.query._id !== result.userId
+          ) {
             data = {};
-            return res.status(404).json({ status: 404, message: "Item not found" });
-          }
-          else {
-            return res.status(200).json({ status: 200, data, message: "success" });
+            return res
+              .status(404)
+              .json({ status: 404, message: "Item not found" });
+          } else {
+            return res
+              .status(200)
+              .json({ status: 200, data, message: "success" });
           }
         },
         public: () => {
-          return res.status(200).json({ status: 200, data, message: "success" });
-        }
-      }
+          return res
+            .status(200)
+            .json({ status: 200, data, message: "success" });
+        },
+      };
       // Increase server response by using an object instead of conditionnal switch/if
       // https://medium.com/@neelesh-arora/stop-using-conditional-statements-everywhere-in-javascript-use-an-object-literal-instead-e780debcda18
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
-      switchVisibility[result.visibility]() ?? res.status(409).json({ status: 409, message: "Item not found" });
-    }
-    else {
+      switchVisibility[result.visibility]() ??
+        res.status(409).json({ status: 409, message: "Item not found" });
+    } else {
       res.status(409).json({ status: 409, message: "Item not found" });
     }
   } catch (err) {
@@ -534,9 +556,14 @@ const getArticles = async (req, res) => {
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    let data = await db.collection("stories").find({ visibility: 'public' }).toArray();
-    data = data.filter(el => !el.deleted).sort((a,b) => b.createdAt - a.createdAt);
-    console.log(data.length + 'items');
+    let data = await db
+      .collection("stories")
+      .find({ visibility: "public" })
+      .toArray();
+    data = data
+      .filter((el) => !el.deleted)
+      .sort((a, b) => b.createdAt - a.createdAt);
+    console.log(data.length + " items");
     const arr = [];
 
     res.status(200).json({ status: 200, data, message: "success" });
@@ -559,13 +586,14 @@ const getUserStories = async (req, res) => {
     const userId = req.query._id;
     if (userId) {
       let data = await db.collection("stories").find({ userId }).toArray();
-      data = data.filter(el => !el.deleted).sort((a,b) => b.createdAt - a.createdAt);
-      console.log(data.length + 'items');
+      data = data
+        .filter((el) => !el.deleted)
+        .sort((a, b) => b.createdAt - a.createdAt);
+      console.log(data.length + " items");
       const arr = [];
 
       res.status(200).json({ status: 200, data, message: "success" });
-    }
-    else {
+    } else {
       res.status(404).json({ status: 404, message: "Item not found" });
     }
   } catch (err) {
@@ -581,55 +609,89 @@ const getTrending = async (req, res) => {
 
   const client = new MongoClient(MONGO_URI, option);
   try {
-    console.log('connecting to db');
+    console.log("connecting to db");
     await client.connect();
-    console.log('connected to db');
+    console.log("connected to db");
     const db = client.db(DB_NAME);
-    console.log('requesting stories array');
-    let stories = await db.collection("stories").find({ visibility: 'public' }).project({
-      title: 1,
-      slug: 1,
-      username: 1,
-      views: 1,
-      createdAt: 1,
-      content: 1,
-      tags: 1,
-    }).toArray();
-    console.log('received stories array');
+    console.log("requesting stories array");
+    let stories = await db
+      .collection("stories")
+      .find({ visibility: "public" })
+      .project({
+        title: 1,
+        slug: 1,
+        username: 1,
+        views: 1,
+        createdAt: 1,
+        content: 1,
+        tags: 1,
+      })
+      .toArray();
+    console.log("received stories array");
     // console.log(stories);
     if (stories) {
-      const data = stories.map(story => {
-        const {
-          _id,
-          title,
-          slug,
-          username,
-          createdAt,
-          content,
-          tags
-        } = story;
-        const tmp = story;
-        const time = readingTime(content);
-        let views = 1;
-        if (story.views) views = story.views;
-        return {
-          _id,
-          title,
-          slug,
-          username,
-          createdAt,
-          readingTime: time,
-          views,
-          tags
-        };
-      }).sort((a,b) => b.views - a.views).slice(0, 6);
-      res.status(200).json({ status: 200, data, message: "success" })
-    }
-    else {
+      const data = stories
+        .map((story) => {
+          const { _id, title, slug, username, createdAt, content, tags } =
+            story;
+          const tmp = story;
+          const time = readingTime(content);
+          let views = 1;
+          if (story.views) views = story.views;
+          return {
+            _id,
+            title,
+            slug,
+            username,
+            createdAt,
+            readingTime: time,
+            views,
+            tags,
+          };
+        })
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 6);
+      res.status(200).json({ status: 200, data, message: "success" });
+    } else {
       res.status(409).json({ status: 404, message: "Items not found" });
     }
   } catch (err) {
     console.log("Error Getting Items", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
+const getBookmarks = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
+  let keys = [];
+  if (typeof req.query.b === 'string') {
+    keys = [req.query.b];
+  }
+  else {
+    keys = req.query.b;
+  }
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    let data = await db
+      .collection("stories")
+      .find({ _id: { $in: keys } })
+      .toArray();
+    data = data
+      .filter((el) => !el.deleted)
+      .sort((a, b) => b.createdAt - a.createdAt);
+    console.log(data.length + " items");
+    const arr = [];
+
+    res.status(200).json({ status: 200, data, message: "success" });
+  } catch (err) {
+    console.log("Error", err);
     res.status(500).json({ status: 500, message: err });
   } finally {
     client.close();
@@ -650,6 +712,7 @@ module.exports = {
   getTagStories,
   getTrending,
   getArticles,
+  getBookmarks,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,

@@ -69,9 +69,13 @@ const Dropdown = ({ open, setOpen }) => {
         <StyledIconItem to="/orders-history">
           <div>Orders</div>
         </StyledIconItem>
-        <StyledIconItem to="/bookmarks">
-          <div>Bookmarks</div>
-        </StyledIconItem>
+        {
+          user.bookmarks.length > 0 && (
+            <StyledIconItem to="/bookmarks">
+              <div>Bookmarks</div>
+            </StyledIconItem>
+          )
+        }
         <StyledIconItem to="/settings">
           <div>Account</div>
         </StyledIconItem>
