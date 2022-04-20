@@ -5,11 +5,16 @@ import Head from "./Head";
 import Form from "./Form";
 import Content from "./Content";
 import { CommentContext } from "../../contexts/CommentContext";
+import { UserContext } from "../../contexts/UserContext";
 
 const Comments = ({ show, handleShowComments, articleId }) => {
   const [display, setDisplay] = useState(false);
   const [loading, setLoading] = useState(true);
   // const [comments, setComments] = useState([]);
+
+  const {
+    state: { user },
+  } = useContext(UserContext);
 
   const {
     state: {
@@ -60,7 +65,9 @@ const Comments = ({ show, handleShowComments, articleId }) => {
         handleShowComments={handleShowComments}
         count={comments.length}
       />
-      <Form articleId={articleId} />
+      {
+        user._id && <Form articleId={articleId} />
+      }
       <Content
         loading={loading}
         articleId={articleId}
