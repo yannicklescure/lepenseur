@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Article from "../components/cards/Article";
+import Subscribe from "../components/Subscribe";
 import Loading from "../components/Loading/Loading";
 import { COLORS } from "../constants";
 import { UserContext } from "../contexts/UserContext";
@@ -22,7 +23,7 @@ const UserPage = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/users/${params.username}`)
+    fetch(`/api/users/${params.username}?user=${user._id}`)
       .then((res) => res.json())
       .then((response) => {
         // console.log(response.data);
@@ -37,8 +38,13 @@ const UserPage = () => {
   return (
     <>
       <Container>
-        <Title>{capitalizeStr(userPage.firstName)} {capitalizeStr(userPage.lastName)}</Title>
-        { userPage.username !== user.username && <div>Follow</div> }
+        <StyledDiv>
+          <Title>{capitalizeStr(userPage.firstName)} {capitalizeStr(userPage.lastName)}</Title>
+          {
+            userPage.followers.length > 0 && <Follow>{userPage.followers.length} {userPage.followers.length === 1 ? 'follower' : 'followers'}</Follow>
+          }
+        </StyledDiv>
+        { userPage.username !== user.username && <Subscribe writer={userPage} /> }
       </Container>
       <Spacer />
       <Wrapper>
@@ -70,8 +76,9 @@ const Container = styled.div`
   margin-bottom: 16px;
 `;
 const Title = styled.h1`
-  font-family: 'Mochiy Pop P One', sans-serif;
-  font-size: 24px;
+  /* font-family: 'Mochiy Pop P One', sans-serif; */
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
   padding-bottom: 4px;
 `;
 const Spacer = styled.div`
@@ -92,6 +99,19 @@ const EmptyText = styled.div`
     font-weight: bold;
     color: ${COLORS.secondary};
   }
+`;
+const StyledDiv = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 16px;
+`;
+const Follow = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: ${COLORS.secondary};
+  padding-bottom: 5px;
 `;
 
 export default UserPage;

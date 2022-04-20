@@ -34,6 +34,8 @@ export const initialStates = {
     imageSrc: "undefined",
     createdAt: 0,
     updatedAt: 0,
+    following: [],
+    followers: [],
   },
   trending: [],
   comments: {

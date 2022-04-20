@@ -24,6 +24,7 @@ const {
   getBookmarks,
   getComments,
   updateComments,
+  updateFollow,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
@@ -72,6 +73,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/bookmarks", getBookmarks);
 app.get("/api/comments", getComments);
 app.put("/api/comments", updateComments);
+app.put("/api/subscribe", updateFollow);
 app.get("/api/stories/:username/:slug", getStory);
 app.put("/api/stories/:username/:slug", updateStory);
 app.put("/api/views", updateStoryViews);

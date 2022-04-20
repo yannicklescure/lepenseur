@@ -14,23 +14,39 @@ const option = {
 
 const getUser = async (req, res) => {
   console.log(req.params);
+  console.log(req.query);
 
   const client = new MongoClient(MONGO_URI, option);
   try {
     await client.connect();
     const db = client.db(DB_NAME);
-    const user = await db
-      .collection("users")
-      .findOne({ username: req.params.username });
+    const user = await db.collection("users").findOne({ username: req.params.username });
     console.log(user);
+    
     const { firstName, lastName, username, imageSrc } = user;
-    let stories = await db
-      .collection("stories")
-      .find({ username, visibility: "public" })
-      .toArray();
-    console.log(stories);
+    let options = [{visibility: "public"}];
+    
+    let followers = [];
+    let following = [];
+    const result = await db.collection("follows").findOne({ userId: user._id });
+    if (req.query.user) {
+      const member = await db.collection("users").findOne({ _id: req.query.user });
+      if (result && member) {
+        console.log(result.username);
+        if (result.followers) {
+          const pos = result.followers.findIndex(el => el.username === member.username);
+          if (pos !== -1) options = [{visibility: "public"}, {visibility: "private"}];
+        }
+      }
+    }
+    if (result) {
+      followers = result.followers;
+      following = result.following;
+    }
+    let stories = await db.collection("stories").find({ username, $or: options }).toArray();
+    // console.log(stories);
     stories = stories.sort((a, b) => b.createdAt - a.createdAt);
-    let data = { firstName, lastName, username, imageSrc, stories };
+    let data = { firstName, lastName, username, imageSrc, stories, followers, following };
     user
       ? res.status(200).json({ status: 200, data, message: "success" })
       : res.status(409).json({ status: 409, message: "Item not found" });
@@ -127,6 +143,17 @@ const loginUser = async (req, res) => {
           likes,
         } = loginAuth;
 
+        let followers = [];
+        let following = [];
+
+        const result = await db.collection("follows").findOne({ userId: _id });
+        console.log(result);
+        if (result) {
+          console.log(result._id);
+          if (result.following) following = result.following;
+          if (result.followers) followers = result.followers;
+        }
+
         return res.status(200).json({
           status: 200,
           message: "User Logged In",
@@ -141,6 +168,8 @@ const loginUser = async (req, res) => {
             ordersHistory,
             imageSrc,
             likes,
+            followers,
+            following,
           },
         });
       } else
@@ -167,6 +196,8 @@ const createUser = async (req, res) => {
     ordersHistory: [],
     imageSrc: "undefined",
     likes: [],
+    followers: [],
+    following: [],
   };
   try {
     await client.connect();
@@ -672,15 +703,11 @@ const getComments = async (req, res) => {
     await client.connect();
     const db = client.db(DB_NAME);
     const articleId = req.query.article;
-    if (articleId) {
-      let data = await db.collection("comments").findOne({ articleId });      
-      res.status(200).json({ status: 200, data: data ? data : {
-        articleId,
-        comments: []
-      }, message: "success" });
-    } else {
-      res.status(404).json({ status: 404, message: "Item not found" });
-    }
+    let data = await db.collection("comments").findOne({ articleId });      
+    res.status(200).json({ status: 200, data: data ? data : {
+      articleId,
+      comments: []
+    }, message: "success" });
   } catch (err) {
     console.log("Error", err);
     res.status(500).json({ status: 500, message: err });
@@ -783,6 +810,133 @@ const getBookmarks = async (req, res) => {
   }
 };
 
+const updateFollow = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
+  const client = new MongoClient(MONGO_URI, option);
+  const { userId, writer } = req.body;
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    const following = await db.collection("users").findOne({ _id: userId });
+    console.log(following._id);
+    const { firstName, lastName, username } = following;
+    // FOLLOWERS
+    const member = await db.collection("users").findOne({ username: writer.username });
+    console.log(member._id);
+    const result2 = await db.collection("follows").findOne({ userId: member._id });
+    console.log(result2);
+
+    if (result2) {
+      const data = result2;
+      let message = "Follower added";
+      if (data.followers) {
+        const pos = data.followers.findIndex(el => el.username === following.username);
+        if (pos === -1) {
+          data.followers.push({
+            _id: uuidv4(),
+            firstName,
+            lastName,
+            username,
+            createdAt: new Date().getTime(),
+          });
+        }
+        else {
+          data.followers.splice(pos, 1);
+          message = "Follower removed";
+        }
+        console.log(data);
+      }
+      else {
+        data.followers = [];
+      }
+
+      const update = await db.collection("follows").updateOne(
+        { _id: result2._id },
+        {
+          $set: data,
+        }
+      );
+      console.log(update);
+    } else {
+      const data = {
+        _id: uuidv4(),
+        userId: member._id,
+        followers: [{
+          _id: uuidv4(),
+          firstName,
+          lastName,
+          username,
+          createdAt: new Date().getTime(),
+        }],
+      };
+      const result = await db.collection("follows").insertOne(data);
+    }
+
+    // FOLLOWING
+    const result = await db.collection("follows").findOne({ userId });
+    console.log(result);
+
+    if (result) {
+      const data = result;
+      let message = "Following added";
+      if (data.following) {
+        const pos = data.following.findIndex(el => el.username === writer.username);
+        if (pos === -1) {
+          data.following.push({
+            _id: uuidv4(),
+            ...writer
+          });
+        }
+        else {
+          data.following.splice(pos, 1);
+          message = "Following removed";
+        }
+        console.log(data);
+      }
+      else {
+        data.following = [];
+      }
+
+      const update = await db.collection("follows").updateOne(
+        { _id: result._id },
+        {
+          $set: data,
+        }
+      );
+      console.log(update);
+      update
+        ? res.status(200).json({
+            status: 200,
+            data,
+            message,
+          })
+        : res.status(409).json({ status: 409, message: "ERROR" });
+    } else {
+      const data = {
+        _id: uuidv4(),
+        userId,
+        following: [{
+          _id: uuidv4(),
+          ...writer
+        }],
+      };
+      const result = await db.collection("follows").insertOne(data);
+      res.status(200).json({
+        status: 200,
+        data,
+        message: "Following created",
+      });
+    }    
+  } catch (err) {
+    console.log("Error", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
 module.exports = {
   getUser,
   getUsers,
@@ -800,6 +954,7 @@ module.exports = {
   getBookmarks,
   getComments,
   updateComments,
+  updateFollow,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,
