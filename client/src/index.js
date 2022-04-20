@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { UserProvider } from './contexts/UserContext';
 import { StoryProvider } from './contexts/StoryContext';
 import { TrendingProvider } from './contexts/TrendingContext';
+import { CommentProvider } from './contexts/CommentContext';
 
 // Hide all app console.logs
 if (process.env.NODE_ENV !== "development") console.log = () => {};
@@ -15,7 +16,9 @@ root.render(
   <UserProvider>
   <StoryProvider>
   <TrendingProvider>
+  <CommentProvider>
     <App />
+  </CommentProvider>
   </TrendingProvider>
   </StoryProvider>
   </UserProvider>

@@ -1,10 +1,19 @@
 import styled from "styled-components";
-import { FaShare, FaRegCommentAlt } from "react-icons/fa";
+import { FaShare, FaCommentAlt, FaRegCommentAlt } from "react-icons/fa";
 import { COLORS } from "../../constants";
 import Like from "../Like";
 import Bookmark from "../Bookmark";
+import { useContext } from "react";
+import { CommentContext } from "../../contexts/CommentContext";
 
 const Actions = ({ article, handleShowComments }) => {
+
+  const {
+    state: {
+      comments,
+    },
+  } = useContext(CommentContext);
+
   return (
     <Wrapper>
       <Container>
@@ -13,7 +22,14 @@ const Actions = ({ article, handleShowComments }) => {
       </Container>
       <Container>
         <Comments onClick={handleShowComments}>
-          <FaRegCommentAlt />
+          <Icon>
+            {
+              comments.length > 0
+              ? <FaCommentAlt />
+              : <FaRegCommentAlt />
+            }
+          </Icon>    
+          <div>{ comments.length } { comments.length === 1 ? 'comment' : 'comments' }</div>
         </Comments>
         <Bookmark article={article} />
         <FaShare />
@@ -37,12 +53,17 @@ const Container = styled.div`
 const Comments = styled.button`
   display: flex;
   align-items: center;
+  gap: 8px;
   background: none;
   outline: none;
   border: none;
   padding: 0;
   cursor: pointer;
   font-size: 16px;
+`;
+const Icon = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 export default Actions;

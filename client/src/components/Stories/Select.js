@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { COLORS, MIN_CHAR } from "../../constants";
 import { StoryContext } from "../../contexts/StoryContext";
@@ -8,6 +8,7 @@ import Loading from "../Loading";
 
 const Select = ({ from = undefined, article = undefined }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showDeleteBtns, setShowDeleteBtns] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -88,15 +89,25 @@ const Select = ({ from = undefined, article = undefined }) => {
 
   return (
     <Wrapper>
-      <Question show={showDeleteBtns}>
-        <ReqDiv>Are you sure ?</ReqDiv>
-        <YesDiv onClick={handleDelete}>Yes</YesDiv>
-        <NoDiv onClick={handleClick}>No</NoDiv>
-      </Question>
-      <Trash
-        onClick={handleClick}
-        show={showDeleteBtns}
-      >Delete article</Trash>
+      {
+        location.pathname !== '/new-story' 
+        ? (
+          <>
+            <Question show={showDeleteBtns}>
+              <ReqDiv>Are you sure ?</ReqDiv>
+              <YesDiv onClick={handleDelete}>Yes</YesDiv>
+              <NoDiv onClick={handleClick}>No</NoDiv>
+            </Question>
+            <Trash
+              onClick={handleClick}
+              show={showDeleteBtns}
+            >Delete article</Trash>
+          </>
+        )
+        : (
+          <div></div>
+        )
+      }      
       <Container>
         <div>Visibility</div>
         <StyledSelect 

@@ -23,9 +23,10 @@ const Article = ({ user, article }) => {
         article={article}
         handleShowComments={handleShowComments}
       />
-      <Comments 
+      <Comments
         show={show}
         handleShowComments={handleShowComments}
+        articleId={article._id}
       />
     </Wrapper>
   )

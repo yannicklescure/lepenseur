@@ -1,40 +1,71 @@
 import styled, { keyframes } from "styled-components";
 import { COLORS } from "../../constants";
-import { FaTimes, FaRegCommentAlt } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import Head from "./Head";
+import Form from "./Form";
+import Content from "./Content";
+import { CommentContext } from "../../contexts/CommentContext";
 
-const Comments = ({ show, handleShowComments }) => {
-  const [display, setDisplay] = useState(show);
+const Comments = ({ show, handleShowComments, articleId }) => {
+  const [display, setDisplay] = useState(false);
+  const [loading, setLoading] = useState(true);
+  // const [comments, setComments] = useState([]);
+
+  const {
+    state: {
+      comments
+    },
+    actions: {
+      loadingComments,
+      receivedCommentsFromServer,
+      // errorCommentFromServer,
+      // deleteComment,
+      // updateComment,
+      // initialComments,
+      // sendingCommentToServer,
+    },
+  } = useContext(CommentContext);
+
+  useEffect(() => {
+    loadingComments();
+    fetch(`/api/comments?article=${articleId}`)
+      .then((res) => res.json())
+      .then((response) => {
+        console.log(response.data.comments);
+        receivedCommentsFromServer(response.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        // errorFromServerUser({ message: "An unknown error has occurred" });
+      });
+  }, []);
 
   useEffect(() => {
     if (show) {
       setDisplay(true);
     }
     else {
-      setTimeout(() => setDisplay(false), 250);
+      setTimeout(() => setDisplay(false), 400);
     }
   }, [show]);
 
   return (
     <Wrapper
       show={show}
-      display={display}
+      open={display}
     >
-      <Top>
-        <TopTitle>
-          <Icon><FaRegCommentAlt /></Icon>
-          <div>Comments</div>
-        </TopTitle>
-        <Close 
-          show={show}
-          onClick={handleShowComments}
-        >
-          <FaTimes />
-        </Close>
-      </Top>
-      <Content>
-        Comments
-      </Content>
+      <Head
+        show={show}
+        handleShowComments={handleShowComments}
+        count={comments.length}
+      />
+      <Form articleId={articleId} />
+      <Content
+        loading={loading}
+        articleId={articleId}
+        comments={comments}
+      />
     </Wrapper>
   )
 }
@@ -60,45 +91,14 @@ const slideOut = keyframes`
 const Wrapper = styled.div`
   position: fixed;
   top: 0;
-  right: 0;
-  display: ${({display}) => display ? 'block' : 'none'};
+  right: ${({show}) => show ? '0' : '-33vw'};
+  display: ${({open}) => open ? 'block' : 'none'};
   width: 33vw;
   height: 100vh;
   background-color: ${COLORS.white};
   padding: 16px;
   animation: ${({show}) => show ? slideIn : slideOut} 300ms ease;
   border-left: 1px solid ${COLORS.secondary};
-`;
-const Top = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 1px solid ${COLORS.secondary};
-`;
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 16px 0;
-`;
-const Close = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: none;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-`;
-const TopTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-const Icon = styled.div`
-  display: flex;
-  align-items: center;
 `;
 
 export default Comments;

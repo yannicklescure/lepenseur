@@ -604,6 +604,91 @@ const getUserStories = async (req, res) => {
   }
 };
 
+const updateComments = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
+  const client = new MongoClient(MONGO_URI, option);
+  const { articleId, comment } = req.body;
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+
+    const result = await db.collection("comments").findOne({ articleId });
+    console.log(result);
+
+    if (result) {
+      const data = result;
+      data.comments.push({
+        _id: uuidv4(),
+        ...comment
+      });
+      console.log(data);
+
+      const update = await db.collection("comments").updateOne(
+        { _id: result._id },
+        {
+          $set: data,
+        }
+      );
+      console.log(update);
+      update
+        ? res.status(200).json({
+            status: 200,
+            data,
+            message: "Comment added",
+          })
+        : res.status(409).json({ status: 409, message: "ERROR" });
+    } else {
+      const data = {
+        _id: uuidv4(),
+        articleId,
+        comments: [{
+          _id: uuidv4(),
+          ...comment
+        }],
+      };
+      const result = await db.collection("comments").insertOne(data);
+      res.status(200).json({
+        status: 200,
+        data,
+        message: "Comment added",
+      });
+    }
+  } catch (err) {
+    console.log("Error", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
+const getComments = async (req, res) => {
+  console.log(req.params);
+  console.log(req.query);
+
+  const client = new MongoClient(MONGO_URI, option);
+  try {
+    await client.connect();
+    const db = client.db(DB_NAME);
+    const articleId = req.query.article;
+    if (articleId) {
+      let data = await db.collection("comments").findOne({ articleId });      
+      res.status(200).json({ status: 200, data: data ? data : {
+        articleId,
+        comments: []
+      }, message: "success" });
+    } else {
+      res.status(404).json({ status: 404, message: "Item not found" });
+    }
+  } catch (err) {
+    console.log("Error", err);
+    res.status(500).json({ status: 500, message: err });
+  } finally {
+    client.close();
+  }
+};
+
 const getTrending = async (req, res) => {
   console.log(req.params);
 
@@ -713,6 +798,8 @@ module.exports = {
   getTrending,
   getArticles,
   getBookmarks,
+  getComments,
+  updateComments,
   // updateCart,
   // updateBookmarks,
   // updateOrdersHistory,

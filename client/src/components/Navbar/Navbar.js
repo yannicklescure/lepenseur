@@ -5,7 +5,7 @@ import SearchInput from "../SearchInput";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext";
 import Dropdown from "./Dropdown";
-import { FaBookmark, FaRegBookmark, FaFeatherAlt, FaRegFileAlt, FaRegBell, FaBell } from "react-icons/fa";
+import { FaBookmark, FaFeatherAlt, FaRegFileAlt } from "react-icons/fa";
 import Cookies from 'universal-cookie';
 import PublishStory from "../buttons/PublishStory";
 import { StoryContext } from "../../contexts/StoryContext";
@@ -69,9 +69,6 @@ const Navbar = () => {
                     ? <UpdateStory />
                     : (
                       <>
-                        <NavItem to="/">
-                          { user.bookmarks.length === 0 ? <FaRegBell /> : <FaBell /> }
-                        </NavItem>
                         { user.bookmarks.length > 0 && (
                             <NavItem to="/bookmarks">
                               <FaBookmark />
