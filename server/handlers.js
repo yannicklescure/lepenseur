@@ -6,6 +6,7 @@ const { MongoClient } = require("mongodb");
 const { readingTime } = require("./helpers");
 require("dotenv").config();
 const { MONGO_URI, DB_NAME } = process.env;
+const mcache = require('memory-cache');
 
 const option = {
   useNewUrlParser: true,
@@ -480,102 +481,114 @@ const getStory = async (req, res) => {
   console.log(req.params);
   console.log(req.query);
 
-  const client = new MongoClient(MONGO_URI, option);
-  try {
-    await client.connect();
-    const db = client.db(DB_NAME);
-    const result = await db.collection("stories").findOne({
-      $and: [{ username: req.params.username }, { slug: req.params.slug }],
-    });
-    console.log(result);
-    let data = {};
-    if (result) {
-      const {
-        title,
-        content,
-        imageSrc,
-        createdAt,
-        updatedAt,
-        _id,
-        userId,
-        slug,
-        visibility,
-        username,
-        tags,
-      } = result;
-      const views = result.views ? result.views : 1;
-      const likes = result.likes ? result.likes : 0;
-      const user = await db.collection("users").findOne({ _id: userId });
-      data = {
-        _id,
-        content,
-        createdAt,
-        imageSrc,
-        title,
-        updatedAt,
-        user: {
-          _id: userId,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          imageSrc: user.imageSrc,
+  let key = '__express__' + req.originalUrl || req.url
+  let cachedBody = mcache.get(key);
+  if (cachedBody) {
+    console.log('Sending cached response');
+    res.status(200).json({ status: 200, data: cachedBody, message: "success" });
+    return
+  }
+  else {
+    const client = new MongoClient(MONGO_URI, option);
+    try {
+      await client.connect();
+      const db = client.db(DB_NAME);
+      const result = await db.collection("stories").findOne({
+        $and: [{ username: req.params.username }, { slug: req.params.slug }],
+      });
+      console.log(result);
+      let data = {};
+      if (result) {
+        const {
+          title,
+          content,
+          imageSrc,
+          createdAt,
+          updatedAt,
+          _id,
+          userId,
+          slug,
+          visibility,
           username,
-        },
-        slug,
-        visibility,
-        views,
-        tags,
-        likes,
-      };
-      const switchVisibility = {
-        unlisted: () => {
-          if (
-            result.visibility === "unlisted" &&
-            req.query._id !== result.userId
-          ) {
-            data = {};
-            return res
-              .status(404)
-              .json({ status: 404, message: "Item not found" });
-          } else {
+          tags,
+        } = result;
+        const views = result.views ? result.views : 1;
+        const likes = result.likes ? result.likes : 0;
+        const user = await db.collection("users").findOne({ _id: userId });
+        data = {
+          _id,
+          content,
+          createdAt,
+          imageSrc,
+          title,
+          updatedAt,
+          user: {
+            _id: userId,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            imageSrc: user.imageSrc,
+            username,
+          },
+          slug,
+          visibility,
+          views,
+          tags,
+          likes,
+        };
+
+        mcache.put(key, data, 24 * 60 * 60 * 1000); // cache 1 day
+
+        const switchVisibility = {
+          unlisted: () => {
+            if (
+              result.visibility === "unlisted" &&
+              req.query._id !== result.userId
+            ) {
+              data = {};
+              return res
+                .status(404)
+                .json({ status: 404, message: "Item not found" });
+            } else {
+              return res
+                .status(200)
+                .json({ status: 200, data, message: "success" });
+            }
+          },
+          private: () => {
+            if (
+              result.visibility === "unlisted" &&
+              req.query._id !== result.userId
+            ) {
+              data = {};
+              return res
+                .status(404)
+                .json({ status: 404, message: "Item not found" });
+            } else {
+              return res
+                .status(200)
+                .json({ status: 200, data, message: "success" });
+            }
+          },
+          public: () => {
             return res
               .status(200)
               .json({ status: 200, data, message: "success" });
-          }
-        },
-        private: () => {
-          if (
-            result.visibility === "unlisted" &&
-            req.query._id !== result.userId
-          ) {
-            data = {};
-            return res
-              .status(404)
-              .json({ status: 404, message: "Item not found" });
-          } else {
-            return res
-              .status(200)
-              .json({ status: 200, data, message: "success" });
-          }
-        },
-        public: () => {
-          return res
-            .status(200)
-            .json({ status: 200, data, message: "success" });
-        },
-      };
-      // Increase server response by using an object instead of conditionnal switch/if
-      // https://medium.com/@neelesh-arora/stop-using-conditional-statements-everywhere-in-javascript-use-an-object-literal-instead-e780debcda18
-      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
-      switchVisibility[result.visibility]() ??
+          },
+        };
+        // Increase server response by using an object instead of conditionnal switch/if
+        // https://medium.com/@neelesh-arora/stop-using-conditional-statements-everywhere-in-javascript-use-an-object-literal-instead-e780debcda18
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator
+        switchVisibility[result.visibility]() ??
+          res.status(409).json({ status: 409, message: "Item not found" });
+      } else {
         res.status(409).json({ status: 409, message: "Item not found" });
-    } else {
-      res.status(409).json({ status: 409, message: "Item not found" });
+      }
+    } catch (err) {
+      console.log("Error Getting Items", err);
+      res.status(500).json({ status: 500, message: err });
+    } finally {
+      client.close();
     }
-  } catch (err) {
-    console.log("Error Getting Items", err);
-    res.status(500).json({ status: 500, message: err });
-  } finally {
-    client.close();
   }
 };
 
@@ -583,26 +596,37 @@ const getArticles = async (req, res) => {
   console.log(req.params);
   console.log(req.query);
 
-  const client = new MongoClient(MONGO_URI, option);
-  try {
-    await client.connect();
-    const db = client.db(DB_NAME);
-    let data = await db
-      .collection("stories")
-      .find({ visibility: "public" })
-      .toArray();
-    data = data
-      .filter((el) => !el.deleted)
-      .sort((a, b) => b.createdAt - a.createdAt);
-    console.log(data.length + " items");
-    const arr = [];
+  let key = '__express__' + req.originalUrl || req.url
+  let cachedBody = mcache.get(key);
+  if (cachedBody) {
+    console.log('Sending cached response');
+    res.status(200).json({ status: 200, data: cachedBody, message: "success" });
+    return
+  }
+  else {
+    const client = new MongoClient(MONGO_URI, option);
+    try {
+      await client.connect();
+      const db = client.db(DB_NAME);
+      let data = await db
+        .collection("stories")
+        .find({ visibility: "public" })
+        .toArray();
+      data = data
+        .filter((el) => !el.deleted)
+        .sort((a, b) => b.createdAt - a.createdAt);
+      console.log(data.length + " items");
+      const arr = [];
 
-    res.status(200).json({ status: 200, data, message: "success" });
-  } catch (err) {
-    console.log("Error", err);
-    res.status(500).json({ status: 500, message: err });
-  } finally {
-    client.close();
+      mcache.put(key, data, 24 * 60 * 60 * 1000); // cache 1 day
+  
+      res.status(200).json({ status: 200, data, message: "success" });
+    } catch (err) {
+      console.log("Error", err);
+      res.status(500).json({ status: 500, message: err });
+    } finally {
+      client.close();
+    }
   }
 };
 
@@ -719,59 +743,69 @@ const getComments = async (req, res) => {
 const getTrending = async (req, res) => {
   console.log(req.params);
 
-  const client = new MongoClient(MONGO_URI, option);
-  try {
-    console.log("connecting to db");
-    await client.connect();
-    console.log("connected to db");
-    const db = client.db(DB_NAME);
-    console.log("requesting stories array");
-    let stories = await db
-      .collection("stories")
-      .find({ visibility: "public" })
-      .project({
-        title: 1,
-        slug: 1,
-        username: 1,
-        views: 1,
-        createdAt: 1,
-        content: 1,
-        tags: 1,
-      })
-      .toArray();
-    console.log("received stories array");
-    // console.log(stories);
-    if (stories) {
-      const data = stories
-        .map((story) => {
-          const { _id, title, slug, username, createdAt, content, tags } =
-            story;
-          const tmp = story;
-          const time = readingTime(content);
-          let views = 1;
-          if (story.views) views = story.views;
-          return {
-            _id,
-            title,
-            slug,
-            username,
-            createdAt,
-            readingTime: time,
-            views,
-            tags,
-          };
+  let key = '__express__' + req.originalUrl || req.url
+  let cachedBody = mcache.get(key);
+  if (cachedBody) {
+    res.status(200).json({ status: 200, data: cachedBody, message: "success" });
+    return
+  }
+  else {
+    const client = new MongoClient(MONGO_URI, option);
+    try {
+      console.log("connecting to db");
+      await client.connect();
+      console.log("connected to db");
+      const db = client.db(DB_NAME);
+      console.log("requesting stories array");
+      let stories = await db
+        .collection("stories")
+        .find({ visibility: "public" })
+        .project({
+          title: 1,
+          slug: 1,
+          username: 1,
+          views: 1,
+          createdAt: 1,
+          content: 1,
+          tags: 1,
         })
-        .sort((a, b) => b.views - a.views)
-        .slice(0, 6);
-      res.status(200).json({ status: 200, data, message: "success" });
-    } else {
-      res.status(409).json({ status: 404, message: "Items not found" });
+        .toArray();
+      console.log("received stories array");
+      // console.log(stories);
+      if (stories) {
+        const data = stories
+          .map((story) => {
+            const { _id, title, slug, username, createdAt, content, tags } =
+              story;
+            const tmp = story;
+            const time = readingTime(content);
+            let views = 1;
+            if (story.views) views = story.views;
+            return {
+              _id,
+              title,
+              slug,
+              username,
+              createdAt,
+              readingTime: time,
+              views,
+              tags,
+            };
+          })
+          .sort((a, b) => b.views - a.views)
+          .slice(0, 6);
+        
+        mcache.put(key, data, 24 * 60 * 60 * 1000); // cache 1 day
+        res.status(200).json({ status: 200, data, message: "success" });
+      } else {
+        res.status(409).json({ status: 404, message: "Items not found" });
+      }
+    } catch (err) {
+      console.log("Error Getting Items", err);
+      res.status(500).json({ status: 500, message: err });
+    } finally {
+      client.close();
     }
-  } catch (err) {
-    console.log("Error Getting Items", err);
-    res.status(500).json({ status: 500, message: err });
-  } finally {
-    client.close();
   }
 };
 
