@@ -472,8 +472,10 @@ const getTagStories = async (req, res) => {
       console.log(req.params.tagName);
       let data = {};
       if (result) {
-        mcache.put(key, data);
         data = result.sort((a, b) => b.createdAt - a.createdAt);
+        mcache.put(key, data);
+        res.flush();
+
         res.status(200).json({ status: 200, data, message: "success" });
       } else {
         res.status(409).json({ status: 409, message: "Item not found" });
@@ -547,6 +549,7 @@ const getStory = async (req, res) => {
         };
 
         mcache.put(key, data);
+        res.flush();
 
         const switchVisibility = {
           unlisted: () => {
@@ -629,6 +632,7 @@ const getArticles = async (req, res) => {
       const arr = [];
 
       mcache.put(key, data);
+      res.flush();
   
       res.status(200).json({ status: 200, data, message: "success" });
     } catch (err) {
@@ -666,6 +670,8 @@ const getUserStories = async (req, res) => {
         const arr = [];
   
         mcache.put(key, data);
+        res.flush();
+
         res.status(200).json({ status: 200, data, message: "success" });
       } else {
         res.status(404).json({ status: 404, message: "Item not found" });
@@ -816,6 +822,8 @@ const getTrending = async (req, res) => {
           .slice(0, 6);
         
         mcache.put(key, data);
+        res.flush();
+
         res.status(200).json({ status: 200, data, message: "success" });
       } else {
         res.status(409).json({ status: 404, message: "Items not found" });
