@@ -136,7 +136,7 @@ const SignUp = () => {
         >
           {status === "loading-user" ? <Loading size="18" /> : "Sign Up"}
         </SignUpBtn>
-        { errorMessage && <ErrorMsg message={errorMessage} width="336px" /> }
+        { errorMessage && <ErrorMsg message={errorMessage} setMessage={setErrorMessage} width="336px" /> }
       </SignUpForm>
 
       <StyledInfo>

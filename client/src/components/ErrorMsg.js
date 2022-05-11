@@ -2,11 +2,12 @@ import { useState } from "react";
 import styled from "styled-components";
 import { COLORS } from "../constants";
 
-const ErrorMsg = ({ message = "An unknown error has occurred", width = '100%' }) => {
+const ErrorMsg = ({ message = "An unknown error has occurred", setMessage, width = '100%' }) => {
   const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = () => {
     setIsClicked(true);
+    setMessage('');
   }
 
   return (

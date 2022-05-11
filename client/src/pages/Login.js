@@ -104,7 +104,7 @@ const Login = () => {
         <div>New to Le penseur?</div>
         <StyledLink to="/signup">Create an account.</StyledLink>
       </StyledInfo>
-      { errorMessage && <ErrorMsg message={errorMessage} width="336px" /> }
+      { errorMessage && <ErrorMsg message={errorMessage} setMessage={setErrorMessage} width="336px" /> }
     </Wrapper>
   );
 };
